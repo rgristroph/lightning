@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "443957d8e0e3f533b90aad73214a6674",
-    "content-hash": "80f077cec5096cbfd1373d61b0f460cd",
+    "hash": "9c10308d112980980d051e354167856c",
+    "content-hash": "44f025c8053c789c951130c04c98c2ad",
     "packages": [
         {
             "name": "composer/installers",
@@ -971,6 +971,9 @@
             "extra": {
                 "branch-alias": {
                     "dev-8.x-1.x": "8.1.x-dev"
+                },
+                "patches_applied": {
+                    "2636406 - Add a views form integration for diff": "https://www.drupal.org/files/issues/2636406-52.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",

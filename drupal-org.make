@@ -18,6 +18,7 @@ projects[diff][type] = module
 projects[diff][download][type] = git
 projects[diff][download][url] = https://git.drupal.org/project/diff
 projects[diff][download][tag] = 8.x-1.0-alpha3
+projects[diff][patch][] = https://www.drupal.org/files/issues/2636406-52.patch
 projects[embed][type] = module
 projects[embed][download][type] = git
 projects[embed][download][url] = https://git.drupal.org/project/embed.git

@@ -66,10 +66,10 @@
                 "2738843 - The view widget should support radio buttons":
                 "https://www.drupal.org/files/issues/2738843-4.patch"
             },
-	    "drupal/media_entity_twitter": {
-		"2764411 - Tweets embedded in CKEditor do not load when selected from Entity Browser":
-		"https://www.drupal.org/files/issues/2764411_4.patch"
-	    },
+            "drupal/media_entity_twitter": {
+                "2764411 - Tweets embedded in CKEditor do not load when selected from Entity Browser":
+                "https://www.drupal.org/files/issues/2764411_4.patch"
+            },
             "drupal/page_manager": {
                 "2747739 - Mega Patch":
                 "https://www.drupal.org/files/issues/page_manager--alpha23-09e79ff--2747739-3.patch"
@@ -111,6 +111,10 @@
                 "https://github.com/drush-ops/drush/commit/ce82b946d49b09cd33da5ca84feb24a6c35f8f8e.patch",
                 "The batch table may not exist by the time _drush_backend_batch_process() is called in 8.x-1.x":
                 "https://github.com/drush-ops/drush/commit/c389aebb7d3e26ff0f544684d8b3ec3528107e55.diff"
+            },
+            "drupal/diff": {
+                "2636406 - Add a views form integration for diff":
+                "https://www.drupal.org/files/issues/2636406-52.patch"
             }
         }
     },

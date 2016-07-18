@@ -80,9 +80,13 @@ function lightning_workflow_update_8001() {
 }
 
 /**
- * Attempts to install the improved node revision view.
+ * Installs Diff module and attempts to install the improved node revision view.
  */
 function lightning_workflow_update_8002() {
+  if (!\Drupal::moduleHandler()->moduleExists('diff')) {
+    \Drupal::service('module_installer')->install(['diff']);
+  }
+
   // We are providing a new access plugin for the node_revisions view,
   // so clear the cached access plugin info.
   \Drupal::service('plugin.manager.views.access')->clearCachedDefinitions();
@@ -93,15 +97,6 @@ function lightning_workflow_update_8002() {
   }
   catch (EntityStorageException $e) {
     drupal_set_message(t("Unable to create the node_revisions view. (Perhaps it already exists?) If you'd like to use Lightning's enhanced interface for viewing node revisions, please manually import the node_revisions view from Lightning Workflow's config directory."), 'warning');
-  }
-}
-
-/**
- * Installs Diff module.
- */
-function lightning_workflow_8003() {
-  if (!\Drupal::moduleHandler()->moduleExists('diff')) {
-    \Drupal::service('module_installer')->install(['diff']);
   }
 }
 
