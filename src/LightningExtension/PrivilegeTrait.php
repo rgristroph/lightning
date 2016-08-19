@@ -3,6 +3,7 @@
 namespace Acquia\LightningExtension;
 
 use Drupal\DrupalExtension\Context\DrupalContext;
+use Drupal\user\Entity\User;
 
 /**
  * Contains helper methods for temporarily escalating privileges.
@@ -10,11 +11,18 @@ use Drupal\DrupalExtension\Context\DrupalContext;
 trait PrivilegeTrait {
 
   /**
-   * The previous, unprivileged user.
+   * Whether or not the user was anonymous before privilege escalation.
    *
-   * @var \stdClass
+   * @var bool
    */
-  protected $previousUser;
+  protected $wasAnonymous;
+
+  /**
+   * Additional roles acquired by the user.
+   *
+   * @var string[]
+   */
+  protected $rolesAcquired = [];
 
   /**
    * Switches to a user account with a set of roles.
@@ -26,16 +34,28 @@ trait PrivilegeTrait {
    *   If DrupalContext is not available.
    */
   protected function acquireRoles(array $roles) {
+    /** @var DrupalContext $context */
     $context = $this->getContext(DrupalContext::class);
 
-    if ($context) {
-      $this->previousUser = $context->user;
+    if (empty($context)) {
+      throw new \Exception('Cannot acquire roles without DrupalContext.');
+    }
+
+    if ($context->user) {
+      $this->rolesAcquired = array_diff(
+        $roles,
+        User::load($context->user->uid)->getRoles()
+      );
+
+      foreach ($this->rolesAcquired as $role) {
+        $context->getDriver()->userAddRole($context->user, $role);
+      }
+    }
+    else {
+      $this->wasAnonymous = TRUE;
 
       $roles = implode(',', $roles);
       $context->assertAuthenticatedByRole($roles);
-    }
-    else {
-      throw new \Exception('Cannot acquire roles without DrupalContext.');
     }
   }
 
@@ -46,19 +66,25 @@ trait PrivilegeTrait {
    *   If DrupalContext is not available.
    */
   protected function releasePrivileges() {
+    /** @var DrupalContext $context */
     $context = $this->getContext(DrupalContext::class);
 
-    if ($context) {
-      if ($this->previousUser) {
-        $context->assertLoggedInByName($this->previousUser->name);
-      }
-      else {
-        $context->assertAnonymousUser();
-      }
-      $this->previousUser = NULL;
+    if (empty($context)) {
+      throw new \Exception('Cannot acquire roles without DrupalContext.');
+    }
+
+    if ($this->wasAnonymous) {
+      $context->assertAnonymousUser();
+
+      $this->wasAnonymous = NULL;
     }
     else {
-      throw new \Exception('Cannot release privileges without DrupalContext.');
+      /** @var \Drupal\user\UserInterface $account */
+      $account = User::load($context->user->uid);
+      array_walk($this->rolesAcquired, [$account, 'removeRole']);
+      $account->save();
+
+      $this->rolesAcquired = [];
     }
   }
 

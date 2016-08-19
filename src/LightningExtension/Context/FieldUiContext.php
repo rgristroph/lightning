@@ -9,6 +9,7 @@ use Acquia\LightningExtension\TableTrait;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ExpectationException;
+use Drupal\Component\Utility\Html;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
 use Drupal\DrupalExtension\Context\MinkContext;
 use Zumba\Mink\Driver\PhantomJSDriver;
@@ -194,7 +195,7 @@ class FieldUiContext extends DrupalSubContextBase {
     $this->fieldUi($entity_type, $bundle, 'Manage fields');
 
     $field = $this->assertField($machine_name);
-    $this->doDropButtonAction($field, 'Delete')->click();
+    $this->doDropButtonAction($field, 'Delete');
 
     $this->minkContext->pressButton('Delete');
   }
@@ -215,7 +216,7 @@ class FieldUiContext extends DrupalSubContextBase {
    */
   public function assertField($identifier) {
     $rows = $this->getTableRows('main table', function (NodeElement $row) use ($identifier) {
-      if ($row->getAttribute('id') == $identifier) {
+      if ($row->getAttribute('id') == Html::cleanCssIdentifier($identifier)) {
         return TRUE;
       }
       else {
