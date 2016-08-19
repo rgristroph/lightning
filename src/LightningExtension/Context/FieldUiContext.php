@@ -48,15 +48,26 @@ class FieldUiContext extends DrupalSubContextBase {
    * @AfterScenario
    */
   public function cleanFields() {
-    $this->assertDrupalApi();
+    if ($this->fields) {
+      $this->acquireRoles(['administrator']);
 
-    while ($this->fields) {
-      $id = array_pop($this->fields);
+      while ($this->fields) {
+        list ($entity_type, $bundle, $field) = array_pop($this->fields);
 
-      \Drupal::entityTypeManager()
-        ->getStorage('field_config')
-        ->load($id)
-        ->delete();
+        $this->fieldUi($entity_type, $bundle, 'Manage fields');
+
+        $path = sprintf(
+          '%s/%s.%s.%s/delete',
+          parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH),
+          $entity_type,
+          $bundle,
+          $field
+        );
+        $this->visitPath($path);
+        $this->minkContext->pressButton('Delete');
+      }
+
+      $this->releasePrivileges();
     }
   }
 
@@ -145,8 +156,7 @@ class FieldUiContext extends DrupalSubContextBase {
     $this->minkContext->pressButton('Save field settings');
     $this->minkContext->pressButton('Save settings');
 
-    // Remember the field_config entity ID so we can delete it post-scenario.
-    $this->fields[] = $entity_type . '.' . $bundle . '.field_' . $machine_name;
+    $this->fields[] = [$entity_type, $bundle, 'field_' . $machine_name];
 
     $this->releasePrivileges();
   }
