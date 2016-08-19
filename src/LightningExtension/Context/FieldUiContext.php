@@ -212,7 +212,7 @@ class FieldUiContext extends DrupalSubContextBase {
    * @throws \Behat\Mink\Exception\ExpectationException
    *   If the field is not found in the table.
    *
-   * @Then I should see a(n) :identifier field
+   * @Then the :identifier field should be present
    */
   public function assertField($identifier) {
     $rows = $this->getTableRows('main table', function (NodeElement $row) use ($identifier) {
