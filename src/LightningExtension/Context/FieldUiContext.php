@@ -2,9 +2,13 @@
 
 namespace Acquia\LightningExtension\Context;
 
+use Acquia\LightningExtension\DropButtonTrait;
 use Acquia\LightningExtension\FieldUiTrait;
 use Acquia\LightningExtension\PrivilegeTrait;
+use Acquia\LightningExtension\TableTrait;
 use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ExpectationException;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
 use Drupal\DrupalExtension\Context\MinkContext;
 use Zumba\Mink\Driver\PhantomJSDriver;
@@ -14,8 +18,10 @@ use Zumba\Mink\Driver\PhantomJSDriver;
  */
 class FieldUiContext extends DrupalSubContextBase {
 
+  use DropButtonTrait;
   use FieldUiTrait;
   use PrivilegeTrait;
+  use TableTrait;
 
   /**
    * Entity IDs of fields created during the scenario.
@@ -115,7 +121,10 @@ class FieldUiContext extends DrupalSubContextBase {
    */
   public function createFieldPrivileged($entity_type, $bundle, $field_type, $machine_name) {
     $this->acquireRoles(['administrator']);
-    $this->createField($entity_type, $bundle, $field_type, $machine_name);
+
+    $arguments = func_get_args();
+    call_user_func_array([$this, 'createField'], $arguments);
+
     $this->releasePrivileges();
   }
 
@@ -184,15 +193,46 @@ class FieldUiContext extends DrupalSubContextBase {
 
     $this->fieldUi($entity_type, $bundle, 'Manage fields');
 
-    $path = sprintf(
-      '%s/%s.%s.%s/delete',
-      parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH),
-      $entity_type,
-      $bundle,
-      $machine_name
-    );
-    $this->visitPath($path);
+    $field = $this->assertField($machine_name);
+    $this->doDropButtonAction($field, 'Delete')->click();
+
     $this->minkContext->pressButton('Delete');
+  }
+
+  /**
+   * Asserts the existence of a field in a Field UI table.
+   *
+   * @param string $identifier
+   *   The machine name or label of the field.
+   *
+   * @return NodeElement
+   *   The table row for the field.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
+   *   If the field is not found in the table.
+   *
+   * @Then I should see a(n) :identifier field
+   */
+  public function assertField($identifier) {
+    $rows = $this->getTableRows('main table', function (NodeElement $row) use ($identifier) {
+      if ($row->getAttribute('id') == $identifier) {
+        return TRUE;
+      }
+      else {
+        $label = $row->find('css', 'td')->getText();
+        return trim($label) == $identifier;
+      }
+    });
+
+    if ($rows) {
+      return reset($rows);
+    }
+    else {
+      throw new ExpectationException(
+        'Expected to find ' . $identifier . ' field.',
+        $this->getSession()->getDriver()
+      );
+    }
   }
 
 }
