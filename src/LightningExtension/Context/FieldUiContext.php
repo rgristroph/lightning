@@ -52,19 +52,8 @@ class FieldUiContext extends DrupalSubContextBase {
       $this->acquireRoles(['administrator']);
 
       while ($this->fields) {
-        list ($entity_type, $bundle, $field) = array_pop($this->fields);
-
-        $this->fieldUi($entity_type, $bundle, 'Manage fields');
-
-        $path = sprintf(
-          '%s/%s.%s.%s/delete',
-          parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH),
-          $entity_type,
-          $bundle,
-          $field
-        );
-        $this->visitPath($path);
-        $this->minkContext->pressButton('Delete');
+        $arguments = array_pop($this->fields);
+        call_user_func_array([$this, 'deleteField'], $arguments);
       }
 
       $this->releasePrivileges();
@@ -118,6 +107,21 @@ class FieldUiContext extends DrupalSubContextBase {
   /**
    * Creates a configurable field via the UI.
    *
+   * This is a privilege-escalating wrapper around createField().
+   *
+   * @see ::createField
+   *
+   * @Given a(n) :field_type field called :machine_name on the :bundle :entity_type type
+   */
+  public function createFieldPrivileged($entity_type, $bundle, $field_type, $machine_name) {
+    $this->acquireRoles(['administrator']);
+    $this->createField($entity_type, $bundle, $field_type, $machine_name);
+    $this->releasePrivileges();
+  }
+
+  /**
+   * Creates a configurable field via the UI.
+   *
    * @param string $entity_type
    *   The target entity type ID.
    * @param string $bundle
@@ -128,15 +132,14 @@ class FieldUiContext extends DrupalSubContextBase {
    *   The machine name of the field, without the field_ prefix. Will also be
    *   used as the label of the field.
    *
-   * @Given a(n) :field_type field called :machine_name on the :bundle :entity_type type
-   *
    * @When I create a(n) :field_type field called :machine_name on the :bundle :entity_type type
    */
   public function createField($entity_type, $bundle, $field_type, $machine_name) {
-    $this->acquireRoles(['administrator']);
-
     $this->fieldUi($entity_type, $bundle, 'Manage fields');
     $this->minkContext->clickLink('Add field');
+
+    // Enter the type, label, and (if not using a JavaScript driver), the
+    // field's machine name.
     $this->minkContext->selectOption('new_storage_type', $field_type);
     $this->minkContext->fillField('label', $machine_name);
 
@@ -151,14 +154,45 @@ class FieldUiContext extends DrupalSubContextBase {
     else {
       $this->minkContext->fillField('field_name', $machine_name);
     }
-
     $this->minkContext->pressButton('Save and continue');
+
+    // @TODO: Support field storage settings.
     $this->minkContext->pressButton('Save field settings');
+
+    // @TODO: Support field settings.
     $this->minkContext->pressButton('Save settings');
 
     $this->fields[] = [$entity_type, $bundle, 'field_' . $machine_name];
+  }
 
-    $this->releasePrivileges();
+  /**
+   * Deletes a configurable field through the UI.
+   *
+   * @param string $entity_type
+   *   The target entity type ID.
+   * @param string $bundle
+   *   The target bundle.
+   * @param string $machine_name
+   *   The machine name of the field, with or without the field_ prefix.
+   *
+   * @When I delete the :machine_name field from the :bundle :entity_type type
+   */
+  public function deleteField($entity_type, $bundle, $machine_name) {
+    if (preg_match('/^field_/', $machine_name) == FALSE) {
+      $machine_name = 'field_' . $machine_name;
+    }
+
+    $this->fieldUi($entity_type, $bundle, 'Manage fields');
+
+    $path = sprintf(
+      '%s/%s.%s.%s/delete',
+      parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH),
+      $entity_type,
+      $bundle,
+      $machine_name
+    );
+    $this->visitPath($path);
+    $this->minkContext->pressButton('Delete');
   }
 
 }
