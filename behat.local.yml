@@ -8,3 +8,5 @@ default:
         # This assumes that we're running Behat from within
         # DRUPAL_ROOT/profiles/lightning.
         drupal_root: '../../'
+      selectors:
+        login_form_selector: 'form#user-login-form'
