@@ -736,16 +736,16 @@
         },
         {
             "name": "drupal/core",
-            "version": "8.2.0-beta1",
+            "version": "8.2.0-beta2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal-composer/drupal-core.git",
-                "reference": "05e5d5fd9cead199203a19dcd5689d4e35f499e5"
+                "reference": "19c879cff19e81c51ce09c265ae8efd9cc25277a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal-composer/drupal-core/zipball/05e5d5fd9cead199203a19dcd5689d4e35f499e5",
-                "reference": "05e5d5fd9cead199203a19dcd5689d4e35f499e5",
+                "url": "https://api.github.com/repos/drupal-composer/drupal-core/zipball/19c879cff19e81c51ce09c265ae8efd9cc25277a",
+                "reference": "19c879cff19e81c51ce09c265ae8efd9cc25277a",
                 "shasum": ""
             },
             "require": {
@@ -799,6 +799,7 @@
                 "drupal/config": "self.version",
                 "drupal/config_translation": "self.version",
                 "drupal/contact": "self.version",
+                "drupal/content_moderation": "self.version",
                 "drupal/content_translation": "self.version",
                 "drupal/contextual": "self.version",
                 "drupal/core-annotation": "self.version",
@@ -848,6 +849,7 @@
                 "drupal/minimal": "self.version",
                 "drupal/node": "self.version",
                 "drupal/options": "self.version",
+                "drupal/outside_in": "self.version",
                 "drupal/page_cache": "self.version",
                 "drupal/path": "self.version",
                 "drupal/quickedit": "self.version",
@@ -911,7 +913,7 @@
                 "GPL-2.0+"
             ],
             "description": "Drupal is an open source content management platform powering millions of websites and applications.",
-            "time": "2016-08-03 13:18:11"
+            "time": "2016-08-20 16:29:45"
         },
         {
             "name": "drupal/ctools",
@@ -1475,15 +1477,15 @@
         },
         {
             "name": "drupal/metatag",
-            "version": "8.1.0-beta9",
+            "version": "8.1.0-beta10",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/metatag",
-                "reference": "1a62e1e051462cb2ddabf4db35a8fef5c69b9c5c"
+                "reference": "c0610ad2ad9318298823c24db66b8769095910a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.0-beta9.zip",
+                "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.0-beta10.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -1506,9 +1508,7 @@
                 "branch-alias": {
                     "dev-8.x-1.x": "8.1.x-dev"
                 },
-                "patches_applied": {
-                    "2765137 - hook_install() + drupal_set_message() = message displayed several times when using a distro.": "https://www.drupal.org/files/issues/2765137-2.patch"
-                }
+                "patches_applied": []
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
             "license": [
@@ -1527,7 +1527,7 @@
                 "php",
                 "seo"
             ],
-            "time": "2016-06-02 19:37:25"
+            "time": "2016-08-22 17:45:58"
         },
         {
             "name": "drupal/multiversion",
@@ -4744,7 +4744,7 @@
             "dist": {
                 "type": "zip",
                 "url": "https://ftp.drupal.org/files/projects/coder-8.x-2.8.zip",
-                "reference": "6d717e1a5a5dd592ebbeaafad11746849fb52532",
+                "reference": null,
                 "shasum": null
             },
             "require": {
@@ -4979,10 +4979,6 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "9.0.x-dev"
-                },
-                "patches_applied": {
-                    "Adding composer.json support to make-convert command": "https://github.com/drush-ops/drush/commit/ce82b946d49b09cd33da5ca84feb24a6c35f8f8e.patch",
-                    "The batch table may not exist by the time _drush_backend_batch_process() is called in 8.x-1.x": "https://github.com/drush-ops/drush/commit/c389aebb7d3e26ff0f544684d8b3ec3528107e55.diff"
                 }
             },
             "autoload": {
