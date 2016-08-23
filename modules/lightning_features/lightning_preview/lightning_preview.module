@@ -28,7 +28,7 @@ function lightning_preview_form_moderation_state_edit_form_alter(array &$form, F
       '#type' => 'checkbox',
       '#title' => t('Lock workspaces in this state'),
       '#default_value' => in_array($state_id, $settings['locked_states']),
-      '#description' => t('If checked, no changes can be made to a workspace when it reaches this state.'),
+      '#description' => t('If checked, no changes can be made in a workspace when it reaches this state.'),
     ];
     $form['#submit'][] = 'lightning_preview_save_locked_state';
   }
