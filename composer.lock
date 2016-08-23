@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6183fc85343b69e2738d3965a481bb7d",
-    "content-hash": "d8d39f66eba8156486588081ed4fce3e",
+    "hash": "738f190df140cca7ea9ebb83fe207384",
+    "content-hash": "85b221ec0226f827983ff49e30af3f04",
     "packages": [
         {
             "name": "composer/installers",
@@ -615,15 +615,15 @@
         },
         {
             "name": "drupal/acquia_connector",
-            "version": "8.1.3",
+            "version": "8.1.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/acquia_connector",
-                "reference": "27291c409c70def252bb4426835aeb62ce6f0c74"
+                "reference": "36f7bebc88b4c18af5aa23d5fd8555839b6c7af9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/acquia_connector-8.x-1.3.zip",
+                "url": "https://ftp.drupal.org/files/projects/acquia_connector-8.x-1.4.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -650,7 +650,7 @@
             ],
             "description": "Allows Drupal to securely communicate with the Acquia Subscription, and checks for updates to Acquia Drupal.",
             "homepage": "https://www.drupal.org/project/acquia_connector",
-            "time": "2016-07-14 13:17:54"
+            "time": "2016-08-04 13:16:46"
         },
         {
             "name": "drupal/config_update",
@@ -870,15 +870,15 @@
         },
         {
             "name": "drupal/ctools",
-            "version": "8.3.0-alpha26",
+            "version": "8.3.0-alpha27",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/ctools",
-                "reference": "c14a5eee970c3d0aab02e88f6c6a4d18091439b8"
+                "reference": "231e2649678d58901368a9e5681f36865ce84e73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/ctools-8.x-3.0-alpha26.zip",
+                "url": "https://ftp.drupal.org/files/projects/ctools-8.x-3.0-alpha27.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -898,9 +898,6 @@
             "extra": {
                 "branch-alias": {
                     "dev-8.x-3.x": "8.3.x-dev"
-                },
-                "patches_applied": {
-                    "2747739 - Mega patch": "https://www.drupal.org/files/issues/ctools--8.x-3.0-alpha26--1fe3649.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
@@ -909,7 +906,7 @@
             ],
             "description": "Provides a number of utility and helper APIs for Drupal developers and site builders.",
             "homepage": "https://www.drupal.org/project/ctools",
-            "time": "2016-05-06 18:51:13"
+            "time": "2016-08-20 19:59:03"
         },
         {
             "name": "drupal/embed",
@@ -1411,15 +1408,15 @@
         },
         {
             "name": "drupal/metatag",
-            "version": "8.1.0-beta9",
+            "version": "8.1.0-beta10",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/metatag",
-                "reference": "1a62e1e051462cb2ddabf4db35a8fef5c69b9c5c"
+                "reference": "c0610ad2ad9318298823c24db66b8769095910a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.0-beta9.zip",
+                "url": "https://ftp.drupal.org/files/projects/metatag-8.x-1.0-beta10.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -1441,9 +1438,6 @@
             "extra": {
                 "branch-alias": {
                     "dev-8.x-1.x": "8.1.x-dev"
-                },
-                "patches_applied": {
-                    "2765137 - hook_install() + drupal_set_message() = message displayed several times when using a distro.": "https://www.drupal.org/files/issues/2765137-2.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
@@ -1463,26 +1457,27 @@
                 "php",
                 "seo"
             ],
-            "time": "2016-06-02 19:37:25"
+            "time": "2016-08-22 17:45:58"
         },
         {
             "name": "drupal/page_manager",
-            "version": "8.1.0-alpha23",
+            "version": "8.1.0-alpha24",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/page_manager",
-                "reference": "fed1710d1b366bb3417b197270c6d73caeae4fa1"
+                "reference": "e17581138de8047ffa4b740a6d9074f854aa80c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/page_manager-8.x-1.0-alpha23.zip",
+                "url": "https://ftp.drupal.org/files/projects/page_manager-8.x-1.0-alpha24.zip",
                 "reference": null,
                 "shasum": null
             },
             "require": {
                 "drupal/block": "8.*",
                 "drupal/core": "8.*",
-                "drupal/ctools": "~8.3.0-alpha21"
+                "drupal/ctools": "~8.3.0-alpha21",
+                "drupal/system": ">=8.0.5"
             },
             "replace": {
                 "drupal/page_manager_ui": "self.version"
@@ -1494,9 +1489,6 @@
             "extra": {
                 "branch-alias": {
                     "dev-8.x-1.x": "8.1.x-dev"
-                },
-                "patches_applied": {
-                    "2747739 - Mega Patch": "https://www.drupal.org/files/issues/page_manager--alpha23-09e79ff--2747739-3.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
@@ -1512,7 +1504,7 @@
             ],
             "description": "Provides a way to place blocks on a custom page.",
             "homepage": "https://www.drupal.org/project/page_manager",
-            "time": "2016-02-16 19:47:59"
+            "time": "2016-08-20 19:15:40"
         },
         {
             "name": "drupal/panelizer",
@@ -4587,7 +4579,7 @@
             "dist": {
                 "type": "zip",
                 "url": "https://ftp.drupal.org/files/projects/coder-8.x-2.8.zip",
-                "reference": "6d717e1a5a5dd592ebbeaafad11746849fb52532",
+                "reference": null,
                 "shasum": null
             },
             "require": {
@@ -4822,10 +4814,6 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "9.0.x-dev"
-                },
-                "patches_applied": {
-                    "Adding composer.json support to make-convert command": "https://github.com/drush-ops/drush/commit/ce82b946d49b09cd33da5ca84feb24a6c35f8f8e.patch",
-                    "The batch table may not exist by the time _drush_backend_batch_process() is called in 8.x-1.x": "https://github.com/drush-ops/drush/commit/c389aebb7d3e26ff0f544684d8b3ec3528107e55.diff"
                 }
             },
             "autoload": {
