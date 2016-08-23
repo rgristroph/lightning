@@ -29,6 +29,12 @@ function lightning_core_node_type_insert(NodeTypeInterface $node_type) {
       ])->save();
     }
   }
+
+  user_role_grant_permissions('content_manager', [
+    'create ' . $node_type->id() . ' content',
+    'delete any ' . $node_type->id() . ' content',
+    'edit any ' . $node_type->id() . ' content',
+  ]);
 }
 
 /**
@@ -42,6 +48,15 @@ function lightning_core_node_type_delete(NodeTypeInterface $node_type) {
     if ($role) {
       $role->delete();
     }
+  }
+
+  $role = Role::load('content_manager');
+  if ($role) {
+    user_role_revoke_permissions($role->id(), [
+      'create ' . $node_type->id() . ' content',
+      'delete any ' . $node_type->id() . ' content',
+      'edit any ' . $node_type->id() . ' content',
+    ]);
   }
 }
 
