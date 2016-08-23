@@ -5,8 +5,48 @@
  * Contains code for Lightning's integration with workspaces.
  */
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\multiversion\Entity\WorkspaceType;
+
+/**
+ * Computes an access result based on moderation state of the active workspace.
+ *
+ * @return \Drupal\Core\Access\AccessResult
+ *   The access result.
+ */
+function lightning_preview_workspace_lock() {
+  /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
+  $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
+
+  if ($workspace->hasField('moderation_state')) {
+    $is_locked = in_array(
+      $workspace->moderation_state->target_id,
+      $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
+    );
+
+    return AccessResult::forbiddenIf($is_locked);
+  }
+  else {
+    return AccessResult::neutral();
+  }
+}
+
+/**
+ * Implements hook_entity_create_access().
+ */
+function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  return lightning_preview_workspace_lock();
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function lightning_preview_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return lightning_preview_workspace_lock();
+}
 
 /**
  * Implements hook_form_FORM_ID_alter() for moderation_state_edit_form().
