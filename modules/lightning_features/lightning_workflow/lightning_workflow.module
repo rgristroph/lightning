@@ -1,7 +1,11 @@
 <?php
 
+/**
+ * @file
+ * Contains workflow-related enhancements to Lightning.
+ */
+
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\node\NodeTypeInterface;
 use Drupal\user\Entity\Role;
 use Drupal\views\ViewExecutable;
@@ -27,8 +31,8 @@ function lightning_workflow_form_node_form_alter(array &$form, FormStateInterfac
     // DO NOT rejigger the buttons.
     array_shift($form['moderation_state']['widget'][0]['#process']);
 
-    // Show the basic 'Save' button, but hide the confusing 'Save as unpublished'
-    // and 'Save and publish' buttons.
+    // Show the basic 'Save' button, but hide the confusing 'Save as
+    // unpublished' and 'Save and publish' buttons.
     $form['actions']['submit']['#access'] = TRUE;
     $form['actions']['publish']['#access'] = $form['actions']['unpublish']['#access'] = FALSE;
     unset($form['actions']['publish']['#dropbutton'], $form['actions']['unpublish']['#dropbutton']);

@@ -1,22 +1,82 @@
 <?php
 
-use Drupal\multiversion\Entity\Workspace;
+/**
+ * @file
+ * Contains code for Lightning's integration with workspaces.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\multiversion\Entity\WorkspaceType;
 
 /**
- * Implements hook_modules_installed()
+ * Implements hook_form_FORM_ID_alter() for moderation_state_edit_form().
  *
- * Enables moderation for the default workspace entity
+ * The aforementioned moderation_state_edit_form() is not a function, but PHP
+ * Code Sniffer is too stupid to understand that. Take it up with him.
  */
-function lightning_preview_modules_installed() {
-  $container = \Drupal::getContainer();
-  $workspace_manager = $container->get('workspace.manager');
+function lightning_preview_form_moderation_state_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  $state_id = $form_state->getFormObject()->getEntity()->id();
 
-  // Make the "basic" Workspace moderatable.
-  $workspace_type_storage = \Drupal::entityManager()->getStorage('workspace_type');
-  $workspace_type = $workspace_type_storage->load('basic');
-  $workspace_type->setThirdPartySetting('workbench_moderation', 'enabled', TRUE);
-  $workspace_type->setThirdPartySetting('workbench_moderation', 'allowed_moderation_states', ['draft', 'needs_review', 'published']);
-  $workspace_type->setThirdPartySetting('workbench_moderation', 'default_moderation_state', 'draft');
-  $workspace_type->save();
+  $settings = WorkspaceType::load('basic')
+    ->getThirdPartySettings('workbench_moderation');
+
+  if (empty($settings)) {
+    return;
+  }
+  if ($settings['enabled'] && in_array($state_id, $settings['allowed_moderation_states'])) {
+    $form['lock_workspace'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Lock workspaces in this state'),
+      '#default_value' => in_array($state_id, $settings['locked_states']),
+      '#description' => t('If checked, no changes can be made to a workspace when it reaches this state.'),
+    ];
+    $form['#submit'][] = 'lightning_preview_save_locked_state';
+  }
 }
 
+/**
+ * Submit callback. Sets whether the moderation state should lock workspaces.
+ *
+ * @param array $form
+ *   The complete form.
+ * @param FormStateInterface $form_state
+ *   The current form state.
+ */
+function lightning_preview_save_locked_state(array &$form, FormStateInterface $form_state) {
+  $workspace_type = WorkspaceType::load('basic');
+  $locked_states = $workspace_type->getThirdPartySetting('workbench_moderation', 'locked_states');
+  $state_id = $form_state->getFormObject()->getEntity()->id();
+
+  if ($form_state->getValue('lock_workspace')) {
+    $locked_states[] = $state_id;
+    $locked_states = array_unique($locked_states);
+  }
+  else {
+    $locked_states = array_diff($locked_states, [$state_id]);
+  }
+
+  $workspace_type
+    ->setThirdPartySetting('workbench_moderation', 'locked_states', $locked_states)
+    ->save();
+}
+
+/**
+ * Implements hook_modules_installed().
+ *
+ * Enables moderation for the default workspace entity.
+ */
+function lightning_preview_modules_installed() {
+  WorkspaceType::load('basic')
+    ->setThirdPartySetting('workbench_moderation', 'enabled', TRUE)
+    ->setThirdPartySetting('workbench_moderation', 'allowed_moderation_states', [
+      'draft',
+      'needs_review',
+      'published',
+    ])
+    ->setThirdPartySetting('workbench_moderation', 'default_moderation_state', 'draft')
+    ->setThirdPartySetting('workbench_moderation', 'locked_states', [
+      'archived',
+      'published',
+    ])
+    ->save();
+}
