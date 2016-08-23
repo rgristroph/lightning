@@ -38,14 +38,23 @@ function lightning_preview_workspace_lock() {
  * Implements hook_entity_create_access().
  */
 function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
-  return lightning_preview_workspace_lock();
+  return $context['entity_type_id'] == 'workspace'
+    ? AccessResult::neutral()
+    : lightning_preview_workspace_lock();
 }
 
 /**
  * Implements hook_entity_access().
  */
 function lightning_preview_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
-  return lightning_preview_workspace_lock();
+  // Don't interfere with the view operation.
+  if ($operation == 'view') {
+    return AccessResult::neutral();
+  }
+
+  return $entity->getEntityTypeId() == 'workspace'
+    ? AccessResult::neutral()
+    : lightning_preview_workspace_lock();
 }
 
 /**
