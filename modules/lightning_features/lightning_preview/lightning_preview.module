@@ -21,7 +21,9 @@ function lightning_preview_workspace_lock() {
   /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
   $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
 
-  if ($workspace->hasField('moderation_state')) {
+  // Never lock the live workspace, and don't try to control access to
+  // workspaces which aren't under moderation.
+  if ($workspace->id() > 1 && $workspace->hasField('moderation_state')) {
     $is_locked = in_array(
       $workspace->moderation_state->target_id,
       $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
@@ -29,9 +31,8 @@ function lightning_preview_workspace_lock() {
 
     return AccessResult::forbiddenIf($is_locked);
   }
-  else {
-    return AccessResult::neutral();
-  }
+  // Fall through, dance with fate.
+  return AccessResult::neutral();
 }
 
 /**
