@@ -10,6 +10,29 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\multiversion\Entity\WorkspaceType;
+use Drupal\user\Entity\Role;
+use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function lightning_preview_moderation_state_transition_insert(StateTransitionInterface $transition) {
+  user_role_grant_permissions('workspace_reviewer', [
+    'use ' . $transition->id() . ' transition',
+  ]);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function lightning_preview_moderation_state_transition_delete(StateTransitionInterface $transition) {
+  $role = Role::load('workspace_reviewer');
+  if ($role) {
+    user_role_revoke_permissions($role->id(), [
+      'use ' . $transition->id() . ' transition',
+    ]);
+  }
+}
 
 /**
  * Computes an access result based on moderation state of the active workspace.
