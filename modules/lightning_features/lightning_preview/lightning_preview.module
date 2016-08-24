@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -37,24 +38,35 @@ function lightning_preview_moderation_state_transition_delete(StateTransitionInt
 /**
  * Computes an access result based on moderation state of the active workspace.
  *
+ * @param string $entity_type
+ *   (optional) The type ID of the entity for which access is being checked.
+ *
  * @return \Drupal\Core\Access\AccessResult
  *   The access result.
  */
-function lightning_preview_workspace_lock() {
+function lightning_preview_workspace_lock($entity_type = NULL) {
   /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
   $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
 
-  // Never lock the live workspace, and don't try to control access to
-  // workspaces which aren't under moderation.
-  if ($workspace->id() > 1 && $workspace->hasField('moderation_state')) {
+  if ($workspace->id() === 1 || $entity_type == 'workspace') {
+    return AccessResult::neutral();
+  }
+
+  if ($entity_type) {
+    if (\Drupal::entityTypeManager()->getDefinition($entity_type) instanceof ConfigEntityTypeInterface) {
+      return AccessResult::forbidden();
+    }
+  }
+
+  // Forbid access if the workspace is locked.
+  if ($workspace->hasField('moderation_state')) {
     $is_locked = in_array(
       $workspace->moderation_state->target_id,
       $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
     );
-
     return AccessResult::forbiddenIf($is_locked);
   }
-  // Fall through, dance with fate.
+  // In all other cases, dance with fate.
   return AccessResult::neutral();
 }
 
@@ -62,9 +74,7 @@ function lightning_preview_workspace_lock() {
  * Implements hook_entity_create_access().
  */
 function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
-  return $context['entity_type_id'] == 'workspace'
-    ? AccessResult::neutral()
-    : lightning_preview_workspace_lock();
+  return lightning_preview_workspace_lock($context['entity_type_id']);
 }
 
 /**
@@ -75,10 +85,7 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
   if ($operation == 'view') {
     return AccessResult::neutral();
   }
-
-  return $entity->getEntityTypeId() == 'workspace'
-    ? AccessResult::neutral()
-    : lightning_preview_workspace_lock();
+  return lightning_preview_workspace_lock($entity->getEntityTypeId());
 }
 
 /**
