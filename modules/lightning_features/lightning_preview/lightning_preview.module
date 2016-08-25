@@ -115,6 +115,29 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
 }
 
 /**
+ * Implements hook_entity_presave().
+ */
+function lightning_preview_entity_presave(EntityInterface $entity) {
+  if ($entity instanceof ConfigEntityInterface) {
+    $workspace = \Drupal::service('workspace.manager')
+      ->getActiveWorkspace()
+      ->getMachineName();
+
+    if ($workspace != 'live') {
+      throw new \LogicException('Configuration can only be modified in the live workspace');
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function lightning_preview_entity_predelete(EntityInterface $entity) {
+  \Drupal::moduleHandler()
+    ->invoke('lightning_preview', 'entity_presave', [$entity]);
+}
+
+/**
  * Implements hook_form_alter().
  */
 function lightning_preview_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
