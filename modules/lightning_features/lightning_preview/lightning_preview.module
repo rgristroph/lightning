@@ -7,12 +7,43 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\multiversion\Entity\WorkspaceInterface;
 use Drupal\multiversion\Entity\WorkspaceType;
 use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
+
+/**
+ * Determines if a workspace is considered locked.
+ *
+ * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
+ *   (optional) The workspace to check. If omitted, uses the active workspace.
+ *
+ * @return bool
+ *   TRUE if the workspace is locked, FALSE otherwise.
+ */
+function lightning_preview_workspace_is_locked(WorkspaceInterface $workspace = NULL) {
+  if (empty($workspace)) {
+    $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
+  }
+
+  // The live workspace is never locked.
+  if ($workspace->id() === 1) {
+    return FALSE;
+  }
+
+  if ($workspace->hasField('moderation_state')) {
+    return in_array(
+      $workspace->moderation_state->target_id,
+      $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
+    );
+  }
+  return FALSE;
+}
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
@@ -36,45 +67,39 @@ function lightning_preview_moderation_state_transition_delete(StateTransitionInt
 }
 
 /**
- * Computes an access result based on moderation state of the active workspace.
+ * Computes entity access from the moderation state of the active workspace.
  *
  * @param string $entity_type
- *   (optional) The type ID of the entity for which access is being checked.
+ *   The entity type ID.
  *
  * @return \Drupal\Core\Access\AccessResult
  *   The access result.
  */
-function lightning_preview_workspace_lock($entity_type = NULL) {
-  /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
+function lightning_preview_entity_access_result($entity_type) {
+  /** @var WorkspaceInterface $workspace */
   $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
 
-  if ($workspace->id() === 1 || $entity_type == 'workspace') {
+  // In the live workspace, always be neutral.
+  if ($workspace->id() === 1) {
     return AccessResult::neutral();
   }
-
-  if ($entity_type) {
+  else {
     if (\Drupal::entityTypeManager()->getDefinition($entity_type) instanceof ConfigEntityTypeInterface) {
       return AccessResult::forbidden();
     }
+    else {
+      return AccessResult::forbiddenIf(
+        lightning_preview_workspace_is_locked($workspace)
+      );
+    }
   }
-
-  // Forbid access if the workspace is locked.
-  if ($workspace->hasField('moderation_state')) {
-    $is_locked = in_array(
-      $workspace->moderation_state->target_id,
-      $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
-    );
-    return AccessResult::forbiddenIf($is_locked);
-  }
-  // In all other cases, dance with fate.
-  return AccessResult::neutral();
 }
 
 /**
  * Implements hook_entity_create_access().
  */
 function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
-  return lightning_preview_workspace_lock($context['entity_type_id']);
+  return lightning_preview_entity_access_result($context['entity_type_id']);
 }
 
 /**
@@ -85,7 +110,52 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
   if ($operation == 'view') {
     return AccessResult::neutral();
   }
-  return lightning_preview_workspace_lock($entity->getEntityTypeId());
+  return lightning_preview_entity_access_result($entity->getEntityTypeId());
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function lightning_preview_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $form_object = $form_state->getFormObject();
+
+  if ($form_object instanceof EntityFormInterface) {
+    $locked = lightning_preview_entity_access_result(
+      $form_object->getEntity()->getEntityTypeId()
+    )->isForbidden();
+
+    if ($locked) {
+      drupal_set_message(t('You cannot make changes because you are in a locked workspace.'), 'warning');
+      $form['#pre_render'][] = 'lightning_preview_disable_buttons';
+    }
+  }
+}
+
+/**
+ * Pre-render function to disable all buttons in a renderable element.
+ *
+ * @param array $element
+ *   The renderable element.
+ *
+ * @return array
+ *   The renderable element with all buttons (at all levels) disabled.
+ */
+function lightning_preview_disable_buttons(array $element) {
+  if (isset($element['#type'])) {
+    $element['#access'] = !in_array($element['#type'], [
+      'button',
+      'submit',
+      'image_button',
+    ]);
+  }
+
+  // Recurse into child elements.
+  foreach (Element::children($element) as $key) {
+    if (is_array($element[$key])) {
+      $element[$key] = call_user_func(__FUNCTION__, $element[$key]);
+    }
+  }
+  return $element;
 }
 
 /**
