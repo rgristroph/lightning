@@ -6,9 +6,10 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
-use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
@@ -32,7 +33,7 @@ function lightning_preview_workspace_is_locked(WorkspaceInterface $workspace = N
   }
 
   // The live workspace is never locked.
-  if ($workspace->id() === 1) {
+  if ($workspace->getMachineName() == 'live') {
     return FALSE;
   }
 
@@ -80,7 +81,7 @@ function lightning_preview_entity_access_result($entity_type) {
   $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
 
   // In the live workspace, always be neutral.
-  if ($workspace->id() === 1) {
+  if ($workspace->getMachineName() == 'live') {
     return AccessResult::neutral();
   }
   else {
@@ -120,12 +121,21 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
   $form_object = $form_state->getFormObject();
 
   if ($form_object instanceof EntityFormInterface) {
+    $entity = $form_object->getEntity();
+
     $locked = lightning_preview_entity_access_result(
-      $form_object->getEntity()->getEntityTypeId()
+      $entity->getEntityTypeId()
     )->isForbidden();
 
     if ($locked) {
-      drupal_set_message(t('You cannot make changes because you are in a locked workspace.'), 'warning');
+      if ($form_object->getEntity() instanceof ConfigEntityInterface) {
+        drupal_set_message(t('Configuration cannot be modified in this workspace.'), 'warning');
+      }
+      if (lightning_preview_workspace_is_locked()) {
+        drupal_set_message(t('You cannot make changes because you are in a locked workspace.'), 'warning');
+      }
+
+      // Hide all buttons at every level of the form.
       $form['#pre_render'][] = 'lightning_preview_disable_buttons';
     }
   }
