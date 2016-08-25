@@ -6,45 +6,15 @@
  */
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\multiversion\Entity\WorkspaceInterface;
+use Drupal\lightning_preview\Exception\WorkspaceLockException;
 use Drupal\multiversion\Entity\WorkspaceType;
 use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
-
-/**
- * Determines if a workspace is considered locked.
- *
- * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
- *   (optional) The workspace to check. If omitted, uses the active workspace.
- *
- * @return bool
- *   TRUE if the workspace is locked, FALSE otherwise.
- */
-function lightning_preview_workspace_is_locked(WorkspaceInterface $workspace = NULL) {
-  if (empty($workspace)) {
-    $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
-  }
-
-  // The live workspace is never locked.
-  if ($workspace->getMachineName() == 'live') {
-    return FALSE;
-  }
-
-  if ($workspace->hasField('moderation_state')) {
-    return in_array(
-      $workspace->moderation_state->target_id,
-      $workspace->type->entity->getThirdPartySetting('workbench_moderation', 'locked_states')
-    );
-  }
-  return FALSE;
-}
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
@@ -68,39 +38,13 @@ function lightning_preview_moderation_state_transition_delete(StateTransitionInt
 }
 
 /**
- * Computes entity access from the moderation state of the active workspace.
- *
- * @param string $entity_type
- *   The entity type ID.
- *
- * @return \Drupal\Core\Access\AccessResult
- *   The access result.
- */
-function lightning_preview_entity_access_result($entity_type) {
-  /** @var WorkspaceInterface $workspace */
-  $workspace = \Drupal::service('workspace.manager')->getActiveWorkspace();
-
-  // In the live workspace, always be neutral.
-  if ($workspace->getMachineName() == 'live') {
-    return AccessResult::neutral();
-  }
-  else {
-    if (\Drupal::entityTypeManager()->getDefinition($entity_type) instanceof ConfigEntityTypeInterface) {
-      return AccessResult::forbidden();
-    }
-    else {
-      return AccessResult::forbiddenIf(
-        lightning_preview_workspace_is_locked($workspace)
-      );
-    }
-  }
-}
-
-/**
  * Implements hook_entity_create_access().
  */
 function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
-  return lightning_preview_entity_access_result($context['entity_type_id']);
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityTypeLocked($context['entity_type_id']);
+
+  return AccessResult::forbiddenIf($locked);
 }
 
 /**
@@ -111,21 +55,22 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
   if ($operation == 'view') {
     return AccessResult::neutral();
   }
-  return lightning_preview_entity_access_result($entity->getEntityTypeId());
+
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
+
+  return AccessResult::forbiddenIf($locked);
 }
 
 /**
  * Implements hook_entity_presave().
  */
 function lightning_preview_entity_presave(EntityInterface $entity) {
-  if ($entity instanceof ConfigEntityInterface) {
-    $workspace = \Drupal::service('workspace.manager')
-      ->getActiveWorkspace()
-      ->getMachineName();
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
 
-    if ($workspace != 'live') {
-      throw new \LogicException('Configuration can only be modified in the live workspace');
-    }
+  if ($locked) {
+    throw new WorkspaceLockException($entity);
   }
 }
 
@@ -133,8 +78,12 @@ function lightning_preview_entity_presave(EntityInterface $entity) {
  * Implements hook_entity_predelete().
  */
 function lightning_preview_entity_predelete(EntityInterface $entity) {
-  \Drupal::moduleHandler()
-    ->invoke('lightning_preview', 'entity_presave', [$entity]);
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
+
+  if ($locked) {
+    throw new WorkspaceLockException($entity);
+  }
 }
 
 /**
@@ -146,20 +95,13 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
   if ($form_object instanceof EntityFormInterface) {
     $entity = $form_object->getEntity();
 
-    $locked = lightning_preview_entity_access_result(
-      $entity->getEntityTypeId()
-    )->isForbidden();
+    $locked =
+      \Drupal::service('lightning_preview.workspace_lock')
+        ->assertEntityUnlocked($entity);
 
     if ($locked) {
-      if ($form_object->getEntity() instanceof ConfigEntityInterface) {
-        drupal_set_message(t('Configuration cannot be modified in this workspace.'), 'warning');
-      }
-      if (lightning_preview_workspace_is_locked()) {
-        drupal_set_message(t('You cannot make changes because you are in a locked workspace.'), 'warning');
-      }
-
-      // Hide all buttons at every level of the form.
-      $form['#pre_render'][] = 'lightning_preview_disable_buttons';
+      $e = new WorkspaceLockException($entity);
+      drupal_set_message($e->getMessage() . '.', 'warning');
     }
   }
 }
