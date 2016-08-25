@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Exception thrown on an illegal entity operation in a locked workspace.
  */
-class WorkspaceLockException extends \LogicException {
+class EntityLockedException extends \LogicException {
 
   /**
    * The entity that caused the exception.

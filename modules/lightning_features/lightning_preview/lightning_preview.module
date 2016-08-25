@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\lightning_preview\Exception\WorkspaceLockException;
+use Drupal\lightning_preview\Exception\EntityLockedException;
 use Drupal\multiversion\Entity\WorkspaceType;
 use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
@@ -70,7 +70,7 @@ function lightning_preview_entity_presave(EntityInterface $entity) {
     ->isEntityLocked($entity);
 
   if ($locked) {
-    throw new WorkspaceLockException($entity);
+    throw new EntityLockedException($entity);
   }
 }
 
@@ -82,7 +82,7 @@ function lightning_preview_entity_predelete(EntityInterface $entity) {
     ->isEntityLocked($entity);
 
   if ($locked) {
-    throw new WorkspaceLockException($entity);
+    throw new EntityLockedException($entity);
   }
 }
 
@@ -100,7 +100,7 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
         ->assertEntityUnlocked($entity);
 
     if ($locked) {
-      $e = new WorkspaceLockException($entity);
+      $e = new EntityLockedException($entity);
       drupal_set_message($e->getMessage() . '.', 'warning');
     }
   }
