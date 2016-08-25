@@ -8,6 +8,7 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
 use Drupal\multiversion\Entity\WorkspaceTypeInterface;
 use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\Argument;
 
 /**
  * @coversDefaultClass \Drupal\lightning_preview\WorkspaceLockTest
@@ -73,13 +74,12 @@ class WorkspaceLockTest extends UnitTestCase {
    */
   public function testLiveWorkspaceIsNotLocked() {
     $this->workspace->getMachineName()->willReturn('live');
+    $workspace = $this->workspace->reveal();
 
-    $this->workspaceManager->getActiveWorkspace()->willReturn(
-      $this->workspace->reveal()
-    );
+    $this->workspaceManager->getActiveWorkspace()->willReturn($workspace);
 
     $this->assertFalse($this->workspaceLock->isWorkspaceLocked());
-    $this->assertFalse($this->workspaceLock->isWorkspaceLocked($this->workspace->reveal()));
+    $this->assertFalse($this->workspaceLock->isWorkspaceLocked($workspace));
   }
 
   /**
@@ -89,7 +89,23 @@ class WorkspaceLockTest extends UnitTestCase {
    */
   public function testModeratedWorkspaceLock() {
     $this->workspace->getMachineName()->willReturn('foo');
-    // TODO: The rest o' this...
+    $this->workspace->hasField('moderation_state')->willReturn(TRUE);
+    $workspace = $this->workspace->reveal();
+
+    $workspace->type = (object) [
+      'entity' => $this->workspaceType->reveal(),
+    ];
+    $this->workspaceType
+      ->getThirdPartySetting('workbench_moderation', 'locked_states', Argument::any())
+      ->willReturn(['archived', 'published']);
+
+    $workspace->moderation_state = (object) [
+      'target_id' => 'draft',
+    ];
+    $this->assertFalse($this->workspaceLock->isWorkspaceLocked($workspace));
+
+    $workspace->moderation_state->target_id = 'published';
+    $this->assertTrue($this->workspaceLock->isWorkspaceLocked($workspace));
   }
 
 }
