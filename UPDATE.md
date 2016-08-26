@@ -54,6 +54,51 @@ use. For example, if you are currently running Beta 1 and are trying to update
 to Beta 3, you will need to follow the instructions for updating from Beta 1 to
 Beta 2, then from Beta 2 to Beta 3, in that order.
 
+### 1.03 to 1.04
+* Go to *Structure > Views* and edit the **Media** view.
+* Edit the **Browser** display and configure the pager.
+* Change "Items to display" to 12 and press Apply.
+* Repeat this configuration for the **Image Browser** display.
+* Save the view.
+
+### 1.02 to 1.03
+There are no manual update steps for this version.
+
+### 1.01 to 1.02
+There are no manual update steps for this version.
+
+### 1.00 to 1.01
+There are no manual update steps for this version.
+
+### RC7 to 1.00
+There are no manual update steps for this version.
+
+### RC6 to RC7
+After running `drush updatedb` or visiting `/update.php`:
+
+* Go to *Structure > Content types* and choose **Manage Display** for the
+  Landing Page content type.
+* Under "Custom Display Settings", make sure the the **Full content** box is
+  checked.
+* Scroll down and ensure the **Panelize this view mode** and **Allow custom
+  overrides of each entity** boxes are checked.
+* Press Save.
+* Click the **Full content** tab.
+* Scroll down and ensure that the **Panelize this view mode**, **Allow custom
+  overrides of each entity**, and **Allow panelizer default choice** boxes are
+  checked.
+* Press Save.
+* Click the **Manage form display** tab.
+* Move the **Panelizer** field out the Disabled area. Be sure that "Panelizer"
+  is selected as the widget type, and press Save.
+
+Depending on what customizations you made to Landing Page prior to the update,
+some, all, or none of these setting might already be enabled.
+
+### RC5 to RC6
+There are no manual update steps for this version. There are several database
+updates. So, as always, be sure to run `drush updatedb` or visit `/update.php`.
+
 ### RC4 to RC5
 There are no manual update steps for this version.
 
@@ -64,7 +109,8 @@ There are no manual update steps for this version.
 * Add the following permissions to the Media Manager role:
   * Access the Media overview page
   * Administer media bundles
-* Edit the **Media** view. Change the **Media** display, and under **Page Settings**, set the access permission to "Access the Media overview page".
+* Edit the **Media** view. Change the **Media** display, and under
+  **Page Settings**, set the access permission to "Access the Media overview page".
 
 ### RC2 to RC3
 There are no manual update steps for this version.

@@ -17,13 +17,22 @@ Feature: Lightning Content Types
   Scenario: Ensure that meta tag fields are present.
     Given I am logged in as a user with the administrator role
     When I visit "node/add/page"
-    Then I should see a "input[name='field_meta_tags[0][basic][title]']" element
-    And I should see a "input[name='field_meta_tags[0][basic][description]']" element
+    Then I should see a "field_meta_tags[0][basic][title]" field
+    And I should see a "field_meta_tags[0][basic][description]" field
 
   Scenario: The basic block content type should have a body field.
     Given I am logged in as a user with the "administrator" role
     When I visit "/block/add"
     Then I should see a "Body" element
+
+  Scenario: Ensure the roles configuration form works
+    Given I am logged in as a user with the administrator role
+    When I visit "/admin/config/system/lightning"
+    And I uncheck the box "content_roles[reviewer]"
+    And I press "Save configuration"
+    Then the response status code should be 200
+    And I check the box "content_roles[reviewer]"
+    And I press "Save configuration"
 
   Scenario: Automatically creating creator and reviewer roles for a content type
     Given I am logged in as a user with the administrator role
@@ -44,3 +53,14 @@ Feature: Lightning Content Types
     And I visit "/admin/people/roles"
     Then I should not see "foo Creator"
     And I should not see "foo Reviewer"
+
+  Scenario: Removing access to workflow actions that do not make sense with moderated content
+    Given I am logged in as a user with the administrator role
+    And page content:
+      | title |
+      | Foo   |
+      | Bar   |
+      | Baz   |
+    When I visit "/admin/content"
+    Then "With selection" should not have a "node_publish_action" option
+    And "With selection" should not have a "node_unpublish_action" option

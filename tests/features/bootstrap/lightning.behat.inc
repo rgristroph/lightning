@@ -61,7 +61,6 @@ class LightningSubContext extends DrupalSubContextBase implements DrupalSubConte
    */
   public function clickElementBySelector($selector) {
     $session = $this->getSession();
-
     $element = $session->getPage()->find('css', $selector);
     if ($element) {
       try {
@@ -264,23 +263,6 @@ class LightningSubContext extends DrupalSubContextBase implements DrupalSubConte
   }
 
   /**
-   * Asserts that a button is not present on the page.
-   *
-   * @param string $button
-   *   The label of the button.
-   *
-   * @Then I should not see the :button button
-   */
-  public function assertNotButton($button) {
-    try {
-      $this->minkContext->assertButton($button);
-    }
-    catch (\Exception $e) {
-      // If the assertion failed, the button does not exist and all is well.
-    }
-  }
-
-  /**
    * Fills in an autocompleting entity reference field.
    *
    * @param string $entity_type
@@ -312,6 +294,117 @@ class LightningSubContext extends DrupalSubContextBase implements DrupalSubConte
     else {
       throw new \Exception("No $entity_type labeled '$label' was found.");
     }
+  }
+
+  /**
+   * Asserts the presence of a live preview element.
+   *
+   * @Then I should see a preview
+   */
+  public function assertPreviewElement() {
+    $this->assertSession()->elementExists('css', '#edit-preview article');
+  }
+
+  /**
+   * Assets that a field exists.
+   *
+   * @param string $locator
+   *   The field ID, name, label, or value.
+   *
+   * @Then I should see a :locator field
+   */
+  public function assertFieldExists($locator) {
+    $this->assertSession()->fieldExists($locator);
+  }
+
+  /**
+   * Asserts that we are visiting a media entity.
+   *
+   * @Then I should be visiting a media entity
+   */
+  public function assertVisitingMediaEntity() {
+    $this->assertSession()->addressMatches('/\/media\/[0-9]+$/');
+
+    try {
+      $this->assertSession()->statusCodeEquals(200);
+    }
+    catch (UnsupportedDriverActionException $e) {
+      // This isn't a critically important assertion, so don't worry about it.
+    }
+  }
+
+  /**
+   * Sets the absolute path to the directory containing uploadable files.
+   *
+   * @BeforeScenario
+   */
+  public function setFilePath() {
+    $this->minkContext->setMinkParameter('files_path', __DIR__ . '/../../files');
+  }
+
+  /**
+   * Switches out of an iframe into the main window.
+   *
+   * @When I switch to the window
+   */
+  public function switchToWindow() {
+    $this->getSession()->switchToWindow();
+  }
+
+  /**
+   * Asserts that a given field has the disabled attribute.
+   *
+   * @param string $field
+   *   The label, placeholder, ID or name of the field to check.
+   *
+   * @Then the :field field should be disabled
+   *
+   * @throws ExpectationException
+   *   If the field does not have the disabled attribute.
+   */
+  public function assertDisabledField($field) {
+    $element = $this->assertSession()->fieldExists($field);
+    if (!$element->hasAttribute('disabled')) {
+      throw new ExpectationException("Expected '{$field}' field to be disabled.", $this->getSession()->getDriver());
+    }
+  }
+
+  /**
+   * Asserts that a select list does not have a specific option.
+   *
+   * @param string $field
+   *   The select list to check.
+   * @param string $option
+   *   The option to look for.
+   *
+   * @Then :field should not have a(n) :option option
+   */
+  public function assertOptionNotExists($field, $option) {
+    $assert = $this->assertSession();
+    $field = $assert->fieldExists($field);
+    $assert->elementNotExists('named', ['option', $option], $field);
+  }
+
+  /**
+   * Submits the image browser.
+   *
+   * @When I submit the entity browser
+   */
+  public function submitEntityBrowser() {
+    $this->getSession()
+      ->executeScript('window.frames["entity_browser_iframe_image_browser"].document.forms[0].op.click()');
+  }
+
+  /**
+   * Switches to an iframe.
+   *
+   * @param string $name
+   *   The iframe name.
+   *
+   * @When I switch to the :name frame
+   */
+  public function switchToFrame($name) {
+    $this->getSession()->switchToIFrame($name);
   }
 
 }

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/acquia/lightning.svg?branch=8.x-1.x)](https://travis-ci.org/acquia/lightning)
+
 # Drupal Lightning
 Lightning's mission is to enable developers to create great authoring
 experiences and empower editorial teams.
@@ -35,6 +37,10 @@ layout of any content type using a drag-and-drop interface (Panels IPE).
 Lightning also includes a Landing Page content type for you to create
 landing pages with their own one-off layouts and content.
 
+Any content type that uses Panelizer will allow you to set up default layouts
+for each view mode of that content type, which you can choose from (or override
+on a one-off basis) for individual pieces of content.
+
 Eight layouts are provided out of the box by Panels. You can create your own
 layouts (see the [Layout Plugin](https://www.drupal.org/project/layout_plugin)
 module) or install a contributed library of layouts like
@@ -59,15 +65,12 @@ by downloading a tarball from our
 ## Project Roadmap
 The roadmap is subject to change, but our projected schedule is:
 
-* April 2016:
-  * Ability to set bundle-level layouts from the node type display page
-* QTR2 2016
+* QTR3/4, 2016
+  * Point in time preview
+  * Personalization
   * Workspace Preview System
   * Remote replication (store workspaces on external apps)
   * Search API integration
-* Further
-  * Point in time preview
-  * Personalization
 
 You can also look for general enhancements along the way. Please use the
 [Lightning issue queue][issue_queue] for latest information and to request
@@ -90,9 +93,11 @@ These instructions assume you have used Composer to install Lightning.
 If necessary, edit behat.local.yml to match your environment. Generally you
 will not need to do this.
 
-### Jasmine Media Tests
-    $ cd MYPROJECT/docroot/profiles/lightning/modules/lightning_features/lightning_media/tests/js
-    $ npm install && npm test
+## Known Issues
+* If you upload an image into an image field using the new image browser, you
+  can set the image's alt text at upload time, but that text will not be
+  replicated to the image field. This is due to a limitation of Entity Browser's
+  API.
 
 [issue_queue]: https://www.drupal.org/project/issues/lightning "Lightning Issue Queue"
 [template]: https://github.com/acquia/lightning-project "Composer-based project template"

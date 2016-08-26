@@ -21,168 +21,129 @@ class MediaLibrarySubContext extends DrupalSubContextBase implements DrupalSubCo
   protected $minkContext;
 
   /**
-   * The CKEditor subcontext.
-   *
-   * @var \CkEditorSubContext
-   */
-  protected $ckContext;
-
-  /**
-   * The Lightning subcontext.
-   *
-   * @var \LightningSubContext
-   */
-  protected $lightning;
-
-  /**
-   * Selector targeting the jQuery UI dialog box.
-   */
-  const DIALOG_BOX_SELECTOR = 'body > .ui-dialog';
-
-  /**
    * Pre-scenario hook.
    *
    * @BeforeScenario
    */
   public function gatherContexts() {
     $this->minkContext = $this->getContext('\Drupal\DrupalExtension\Context\MinkContext');
-    $this->ckContext = $this->getContext('CkEditorSubContext');
-    $this->lightning = $this->getContext('LightningSubContext');
   }
 
   /**
-   * Opens the CKEditor media widget.
+   * Waits for a JavaScript condition to become truthy.
    *
-   * @When I open the CKEditor media widget
+   * @param string $expression
+   *   The JavaScript expression to wait for.
    */
-  public function openCkEditorMediaWidget() {
-    $this->minkContext->iWaitForAjaxToFinish();
-    $this->ckContext->execute('media_library');
-    $this->minkContext->iWaitForAjaxToFinish();
+  protected function awaitExpression($expression) {
+    $this->getSession()->wait(10000, $expression);
   }
 
   /**
-   * Asserts that a jQuery UI dialog box is present.
+   * Waits for an element to exist.
    *
-   * @param string $expected_title
-   *   (optional) The expected title of the dialog box.
-   *
-   * @throws \UnexpectedValueException
-   *   If the dialog box's expected title does not match its actual title.
-   *
-   * @Then I should see a dialog box
-   * @Then I should see a dialog box titled :expected_title
-   * @Then I should see a dialog box entitled :expected_title
+   * @param string $selector
+   *   The element's CSS selector.
+   * @param int $timeout
+   *   How many seconds to wait before timing out.
    */
-  public function assertDialogBox($expected_title = NULL) {
-    $this->assertSession()->elementExists('css', static::DIALOG_BOX_SELECTOR);
-
-    if ($expected_title) {
-      $actual_title = $this->getSession()
-        ->evaluateScript('jQuery("' . static::DIALOG_BOX_SELECTOR . '").children().eq(1).dialog("option", "title")');
-
-      if ($actual_title != $expected_title) {
-        throw new \UnexpectedValueException("Expected dialog box to be titled '$expected_title' but it was '$actual_title'.");
-      }
-    }
+  protected function awaitElement($selector, $timeout = 10) {
+    $this->getSession()
+      ->wait($timeout * 1000, 'document.querySelector("' . addslashes($selector) . '")');
   }
 
   /**
-   * Filters the media library to a specific media type.
+   * Opens the media browser, obviously.
    *
-   * @param string $type
-   *   The media type to filter.
+   * @param string $button
+   *   (optional) The embed button ID.
    *
-   * @When I filter the media library by type :type
+   * @When I open the media browser
    */
-  public function filterLibraryByType($type) {
-    $this->minkContext->selectOption('__bundle', $type);
+  public function openMediaBrowser($button = 'media_browser') {
+    /** @var \CkEditorSubContext $ck_context */
+    $ck_context = $this->getContext('\CkEditorSubContext');
+    $ck_context->execute('editdrupalentity', NULL, ['id' => $button]);
+
     $this->minkContext->iWaitForAjaxToFinish();
+    $frame = 'entity_browser_iframe_' . $button;
+    $this->awaitElement('iframe[name="' . $frame . '"]', 30);
+    $this->getSession()->switchToIFrame($frame);
   }
 
   /**
-   * Selects an asset from the media library.
+   * Selects an item from the media library.
    *
    * @param int $n
-   *   The one-based index of the asset.
+   *   The one-based index of the item to select.
    *
-   * @When /^I select the (\d+)(?:st|nd|rd|th) asset in the media library$/
+   * @When I select item :n in the media browser
    */
-  public function selectMediaLibraryAsset($n) {
-    $selector = static::DIALOG_BOX_SELECTOR . ' .library ul.collection-view li:nth-child(' . $n . ')';
-    $this->lightning->clickElementBySelector($selector);
+  public function selectNthItem($n) {
+    sleep(5);
+    $row = floor($n / 4) + 1;
+    $column = ($n % $row) + 1;
+
+    $selector = '.view-media .row-' . $row . ' .col-' . $column;
+    /** @var \LightningSubContext $lightning */
+    $lightning = $this->getContext('\LightningSubContext');
+    $lightning->clickElementBySelector($selector);
   }
 
   /**
-   * Uploads a file to the media library.
+   * Completes the media browser selection.
+   *
+   * @When I complete the media browser selection
+   */
+  public function completeSelection() {
+    /** @var \Behat\Mink\Session $session */
+    $session = $this->getSession();
+    $session->switchToWindow();
+    $session->executeScript('window.frames.entity_browser_iframe_media_browser.document.forms[0].elements.op.click()');
+    $this->awaitExpression('!window.frames.entity_browser_iframe_media_browser');
+    $this->minkContext->iWaitForAjaxToFinish();
+    $this->awaitElement('form.entity-embed-dialog');
+    $session->executeScript('document.querySelector("form.entity-embed-dialog").elements.op[1].click()');
+    $this->minkContext->iWaitForAjaxToFinish();
+  }
+
+  /**
+   * Waits for the inline entity form (containing required fields) to exist.
+   */
+  protected function awaitEntityForm() {
+    $this->minkContext->iWaitForAjaxToFinish();
+    $this->awaitExpression('document.getElementById("ief-target").textContent.length');
+  }
+
+  /**
+   * Uploads a file in the media browser.
    *
    * @param string $file
-   *   The file path, relative to ../../files.
+   *   The path to the file, relative to the test files directory.
    *
-   * @When I upload :file to my media library
+   * @When I upload :file
    */
   public function upload($file) {
-    $session = $this->getSession();
-    $selector = 'document.getElementById("__dropzone_0")';
-
-    // Force the file upload field to be visible so we can attach the file.
-    $session->executeScript($selector . '.style.position = "static"');
-    $session->executeScript($selector . '.style.visibility = "visible"');
-    $session->executeScript($selector . '.style.width = "auto"');
-    $session->executeScript($selector . '.style.height = "auto"');
-    $this->minkContext->attachFileToField('__dropzone_0', __DIR__ . '/../../files/' . $file);
-
-    // Give the upload a second to start...
-    $session->wait(1000, 'UploadView.xhr > 0');
-    // ...and 10 seconds to complete.
-    $session->wait(10000, 'UploadView.xhr === 0');
-
-    $this->minkContext->iWaitForAjaxToFinish();
-    $this->minkContext->assertCheckBox('Save to my media library');
+    $this->minkContext->clickLink('Upload');
+    $this->minkContext->attachFileToField('File', $file);
+    $this->awaitEntityForm();
   }
 
   /**
-   * Inserts an embed code into the media widget.
+   * Enters an embed code in the media browser.
    *
-   * @param string $embed_code
+   * @param string $code
    *   The embed code.
    *
-   * @When I enter the embed code :embed_code
+   * @When I enter embed code :code
    */
-  public function useEmbedCode($embed_code) {
-    $this->minkContext->fillField('__embed_code', $embed_code);
-    $this->minkContext->iWaitForAjaxToFinish();
-
-    /** @var \EntitySubContext $context */
-    $context = $this->getContext('EntitySubContext');
-    // Track the created entity so that we don't pollute the test site.
-    $context->trackNewest('media');
-  }
-
-  /**
-   * Asserts the presence of the customized Entity Embed dialog box.
-   *
-   * @Then I should see the Entity Embed form
-   */
-  public function assertEntityEmbedDialog() {
-    $assert = $this->assertSession();
-    $assert->elementExists('css', 'form.entity-embed-dialog');
-    // The Back button and display plugin selection should be hidden.
-    $assert->elementNotExists('css', 'form.entity-embed-dialog input[type = "submit"][value = "Back"]');
-    $assert->elementNotExists('css', 'form.entity-embed-dialog select[name = "attributes[data-entity-embed-display]"]');
-  }
-
-  /**
-   * Submits the current tab of the media widget.
-   *
-   * @When I submit the media widget
-   */
-  public function submit() {
-    $this->lightning->takeScreenshot('foo');
-    $selector = static::DIALOG_BOX_SELECTOR . ' > .ui-tabs > div[aria-hidden = "false"] footer button';
-
-    $this->lightning->clickElementBySelector($selector);
-    $this->minkContext->iWaitForAjaxToFinish();
+  public function embed($code) {
+    $this->minkContext->clickLink('Create Embed');
+    $this->minkContext->fillField('embed_code', $code);
+    // The change event, which triggers AJAX, is fired automatically after 600
+    // milliseconds.
+    sleep(1);
+    $this->awaitEntityForm();
   }
 
 }

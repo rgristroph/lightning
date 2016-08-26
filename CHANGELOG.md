@@ -1,3 +1,84 @@
+## 1.03
+* Lightning now includes an image browser for uploading images to and
+  selecting images from your media library. It is automatically used
+  for all new image fields by default, to give your users a much nicer
+  out-of-the-box experience of dealing with image assets. The image
+  browser is NOT automatically added to any existing image fields, but
+  they can be manually changed to use it. (#2767213)
+* Several other modules, including Entity Browser, were updated as well.
+  Note that Entity Browser introduced several backwards-incompatible API
+  changes, so if you have custom Entity Browser code you may need to
+  update. Be safe and back up your database before running updating to
+  this version of Lightning. (#2778437)
+* Views Infinite Scroll was updated to 8.x-1.2. (#2773811)
+* A sanity check was added to prevent fatal errors when preparing extra
+  fields for media asset previews. (#2759825)
+* The Lightning Extender will now search for lightning.extend.yml in sites/all
+  as well as your site's individual directory. This means it's now possible for
+  every site in a multisite Lightning installation to use the same extender
+  configuration. (#2766337)
+* Fixed a problem where the media browser would not appear when editing a node
+  with an embedded tweet. (#2768849)
+* The Lightning Extender's redirection feature was not working and would always
+  send users to a "Drupal is already installed" error page. (#2775425)
+* Fixed a PHP notice arising from the media asset preview handler. (PR #140)
+
+## 1.02
+* Updated core to 8.1.7 (Security Release) and all contrib modules to latest 
+  available releases.
+* It's now possible to define which Lightning extensions will be enabled by
+  listing them in ```lightning.extend.yml```. (#2765627)
+* Extender::getRedirect() now checks to see if key exists before reading value
+  to prevent a PHP notice from being displayed on install. (#276446)
+* Fixed a bug where embedded tweets did not appear in CKEditor. (#2764909)
+* Applied a patch to suppress metatag messages during install. (#2765137)
+
+## 1.01
+* Mega patch for Panels included binary files and would fail to apply in certain
+  environments. (#2752375)
+* Removed custom step definitions which are now included in mink. (#2718123)
+* Video Entity thumbnails are now regenerated if the referenced video is
+  updated. (#2752429)
+* Fixed database update that would occur if updating directly from RC6 to 1.00.
+  (GH #133)
+* Fixed an issue where all media was displayed in the library, regardless of
+  the value of "Save to Library". (#2757473)
+* Fixed an issue that prevented users from selecting certain cached elements
+  from the media library. (#2757481)
+* Updated the front page view to use the [site:name] token instead of printing
+  "Lightning". (#2757351)
+* Provided a standard way to extend Lightning. (#2734507)
+* Improved CI now automatically tests update path.
+* Lightning Media no longer clears the render cache after entity operations.
+  (#2759313)
+
+## 1.00
+* Fixed regressions in panelizer and added test coverage. (#2751225)
+* Updated drupal scaffold to latest release. (#2751541)
+* Fixed plugin lazy loading usort warnings. (#2699157)
+
+## Release Candidate 7 (RC7)
+* Drupal core's developer dependencies are now included with Lightning so that
+  you can run standard Drupal tests. (Issues #2703009 and #2747953)
+* Lightning now integrates Panelizer's new administrative UI, which allows the
+  creation of default layouts for any view mode of any content type. (Issue
+  #2678240)
+* Formalized Lightning's logic for determining dependency version constraints.
+  (Issue #2745949)
+* Updates Drupal Core to 8.1.3
+
+## Release Candidate 6 (RC6)
+* Lightning Media no longer depends on or references the Lightning profile
+  directly. [#2692419]
+* Site Builders can now choose to opt out of the user roles that Lightning
+  generates per content type. Visit `admin/config/system/lightning` to change
+  this setting. [#2715517]
+* Added build status to README.md. [#2737655]
+* Updated all dependencies to latest releases. [#2737745]
+* The dependency on Drush has been moved to `require-dev`. [#2716657]
+* Lightning Media has been rewritten to take advantage of Entity Browser. [#2726889]
+* Lightning Media now supports documents (txt, pdf, doc, and docx).
+
 ## Release Candidate 5 (RC5)
 * The Media  Entity Embeddable Video module has been deprecated and is replaced
   by Video Embed Field in this release. (Issue #2700399)
