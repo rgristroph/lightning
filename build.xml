@@ -117,6 +117,13 @@
     <exec command="${drush} config-set system.performance css.preprocess 0 --yes --format=boolean" dir="${docroot}" />
     <exec command="${drush} config-set system.performance js.preprocess 0 --yes --format=boolean" dir="${docroot}" />
     <exec command="${drush} config-set system.logging error_level all --yes" dir="${docroot}" />
+
+    <if>
+      <isset property="www.group" />
+      <then>
+        <chown file="${site}/files" user="${env.USER}" group="${www.group}" />
+      </then>
+    </if>
   </target>
 
   <!-- Builds the Lightning code base from HEAD, overwriting docroot, and

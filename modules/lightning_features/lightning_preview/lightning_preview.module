@@ -97,7 +97,7 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
 
     $locked =
       \Drupal::service('lightning_preview.workspace_lock')
-        ->assertEntityUnlocked($entity);
+        ->isEntityLocked($entity);
 
     if ($locked) {
       $e = new EntityLockedException($entity);
