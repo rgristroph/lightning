@@ -30,6 +30,15 @@
         {
             "type": "composer",
             "url": "https://packagist.drupal-composer.org"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/josephdpurcell/drupal-replication"
+        }
+        ,
+        {
+            "type": "vcs",
+            "url": "https://github.com/josephdpurcell/drupal-workspace"
         }
     ],
     "scripts": {
@@ -79,11 +88,15 @@
             },
             "drupal/scheduled_updates": {
                 "2674874 - Issue saving Schedule Update Type form":
-                "https://www.drupal.org/files/issues/schedule_updates-save_type-2674874-2.patch"
+                "https://www.drupal.org/files/issues/schedule_updates-save_type-2674874-2.patch",
+                "2720169 - Scheduled Update Type entity should not have canonical link template":
+                "https://www.drupal.org/files/issues/scheduled_updates-no-canonical-link-for-update-type.patch"
             },
             "drupal/workbench_moderation": {
                 "2668006 - Provide logical access control for when IPE should be applied to moderated nodes":
-                "https://www.drupal.org/files/issues/2668006-2.patch"
+                "https://www.drupal.org/files/issues/2668006-2.patch",
+                "2780691 - Incorrect EntityRevision paramconverter service definition causes a fatal error":
+                "https://www.drupal.org/files/issues/workbench_moderation-invalid_service_definition.patch"
             },
             "drush/drush": {
                 "Adding composer.json support to make-convert command":
@@ -116,6 +129,11 @@
         "drupal/metatag": "^8.1.0",
         "drupal/token": "^8.1.0",
         "drupal/pathauto": "^8.1.0",
+        "drupal/multiversion": "8.1.0-alpha9",
+        "drupal/workspace": "dev-replication-filters-ui",
+        "drupal/replication": "dev-replication-filters-ui",
+        "drupal/entity_storage_migrate": "dev-8.x-1.x",
+        "drupal/key_value": "^8.1.0",
         "drupal/entity_browser": "8.1.0-alpha7",
         "drupal/views_infinite_scroll": "^8.1.1",
         "drupal/media_entity_document": "^8.1.0",

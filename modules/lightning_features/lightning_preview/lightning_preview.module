@@ -1,0 +1,187 @@
+<?php
+
+/**
+ * @file
+ * Contains code for Lightning's integration with workspaces.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\lightning_preview\Exception\EntityLockedException;
+use Drupal\multiversion\Entity\WorkspaceType;
+use Drupal\user\Entity\Role;
+use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function lightning_preview_moderation_state_transition_insert(StateTransitionInterface $transition) {
+  user_role_grant_permissions('workspace_reviewer', [
+    'use ' . $transition->id() . ' transition',
+  ]);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function lightning_preview_moderation_state_transition_delete(StateTransitionInterface $transition) {
+  $role = Role::load('workspace_reviewer');
+  if ($role) {
+    user_role_revoke_permissions($role->id(), [
+      'use ' . $transition->id() . ' transition',
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_create_access().
+ */
+function lightning_preview_entity_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityTypeLocked($context['entity_type_id']);
+
+  return AccessResult::forbiddenIf($locked);
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function lightning_preview_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  // Don't interfere with the view operation.
+  if ($operation == 'view') {
+    return AccessResult::neutral();
+  }
+
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
+
+  return AccessResult::forbiddenIf($locked);
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function lightning_preview_entity_presave(EntityInterface $entity) {
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
+
+  if ($locked) {
+    throw new EntityLockedException($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function lightning_preview_entity_predelete(EntityInterface $entity) {
+  $locked = \Drupal::service('lightning_preview.workspace_lock')
+    ->isEntityLocked($entity);
+
+  if ($locked) {
+    throw new EntityLockedException($entity);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function lightning_preview_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $form_object = $form_state->getFormObject();
+
+  if ($form_object instanceof EntityFormInterface) {
+    $entity = $form_object->getEntity();
+
+    $locked =
+      \Drupal::service('lightning_preview.workspace_lock')
+        ->isEntityLocked($entity);
+
+    if ($locked) {
+      $e = new EntityLockedException($entity);
+      drupal_set_message($e->getMessage() . '.', 'warning');
+      $form['#pre_render'][] = 'lightning_preview_disable_buttons';
+    }
+  }
+}
+
+/**
+ * Pre-render function to disable all buttons in a renderable element.
+ *
+ * @param array $element
+ *   The renderable element.
+ *
+ * @return array
+ *   The renderable element with all buttons (at all levels) disabled.
+ */
+function lightning_preview_disable_buttons(array $element) {
+  if (isset($element['#type'])) {
+    $element['#access'] = !in_array($element['#type'], [
+      'button',
+      'submit',
+      'image_button',
+    ]);
+  }
+
+  // Recurse into child elements.
+  foreach (Element::children($element) as $key) {
+    if (is_array($element[$key])) {
+      $element[$key] = call_user_func(__FUNCTION__, $element[$key]);
+    }
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for moderation_state_edit_form().
+ *
+ * The aforementioned moderation_state_edit_form() is not a function, but PHP
+ * Code Sniffer is too stupid to understand that. Take it up with him.
+ */
+function lightning_preview_form_moderation_state_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  $state_id = $form_state->getFormObject()->getEntity()->id();
+
+  $settings = WorkspaceType::load('basic')
+    ->getThirdPartySettings('workbench_moderation');
+
+  if (empty($settings)) {
+    return;
+  }
+  if ($settings['enabled'] && in_array($state_id, $settings['allowed_moderation_states'])) {
+    $form['lock_workspace'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Lock workspaces in this state'),
+      '#default_value' => in_array($state_id, $settings['locked_states']),
+      '#description' => t('If checked, no changes can be made in a workspace when it reaches this state.'),
+    ];
+    $form['#submit'][] = 'lightning_preview_save_locked_state';
+  }
+}
+
+/**
+ * Submit callback. Sets whether the moderation state should lock workspaces.
+ *
+ * @param array $form
+ *   The complete form.
+ * @param FormStateInterface $form_state
+ *   The current form state.
+ */
+function lightning_preview_save_locked_state(array &$form, FormStateInterface $form_state) {
+  $workspace_type = WorkspaceType::load('basic');
+  $locked_states = $workspace_type->getThirdPartySetting('workbench_moderation', 'locked_states');
+  $state_id = $form_state->getFormObject()->getEntity()->id();
+
+  if ($form_state->getValue('lock_workspace')) {
+    $locked_states[] = $state_id;
+    $locked_states = array_unique($locked_states);
+  }
+  else {
+    $locked_states = array_diff($locked_states, [$state_id]);
+  }
+
+  $workspace_type
+    ->setThirdPartySetting('workbench_moderation', 'locked_states', $locked_states)
+    ->save();
+}
