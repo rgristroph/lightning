@@ -102,6 +102,7 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
     if ($locked) {
       $e = new EntityLockedException($entity);
       drupal_set_message($e->getMessage() . '.', 'warning');
+      $form['#pre_render'][] = 'lightning_preview_disable_buttons';
     }
   }
 }
