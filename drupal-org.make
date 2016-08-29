@@ -89,6 +89,7 @@ projects[panelizer][download][tag] = 8.x-3.0-alpha2
 projects[panelizer][patch][] = https://www.drupal.org/files/issues/panelizer--alpha2-1ddfa61--2747739-5.patch
 projects[panelizer][patch][] = https://www.drupal.org/files/issues/2701349-2.patch
 projects[panelizer][patch][] = https://www.drupal.org/files/issues/panelizer-ipe-url-root-handling.patch
+projects[panelizer][patch][] = https://www.drupal.org/files/issues/2664682-54.patch
 projects[panels][type] = module
 projects[panels][download][type] = git
 projects[panels][download][url] = https://git.drupal.org/project/panels
