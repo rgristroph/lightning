@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "30e8503200f648ebe6365f0cf5015ae9",
-    "content-hash": "b94bf5be0df227d4401a329963f0f0c6",
+    "hash": "101616e5013830a2722928c977245bff",
+    "content-hash": "a5b639ae6b57c263dfca74bfca7424d8",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1681,8 +1681,7 @@
                 },
                 "patches_applied": {
                     "2747739 - Mega Patch": "https://www.drupal.org/files/issues/panels-beta4-75131285.patch",
-                    "2667754 - Allow other modules to disable the IPE based on custom logic": "https://www.drupal.org/files/issues/2667754-3.patch",
-                    "Bandaid tempstore patch": "https://www.drupal.org/files/issues/bandaid.patch"
+                    "2667754 - Allow other modules to disable the IPE based on custom logic": "https://www.drupal.org/files/issues/2667754-3.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
