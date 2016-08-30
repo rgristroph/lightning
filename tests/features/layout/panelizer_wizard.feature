@@ -89,7 +89,7 @@ Feature: Panelizer Wizard
     And I click "Edit draft"
     Then the "Full content" field should be disabled
 
-  @javascript @failing
+  @javascript
   Scenario:  Block placement on non-default displays are preserved after re-saving the entity.
     Given I am logged in as a user with the "layout_manager,landing_page_creator" role
     And landing_page content:
