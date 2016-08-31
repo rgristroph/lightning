@@ -111,11 +111,11 @@ Feature: Panelizer Wizard
     And I click "Edit draft"
     And I select "two_column" from "Full content"
     And I press "Save"
-    And I place the "views_block:who_s_online-who_s_online_block" block from the "Lists (Views)" category
+    And I place the "help_block" block from the "Help" category
     And I save the layout
     And I click "Edit draft"
     And I press "Save"
-    Then I should see a "views_block:who_s_online-who_s_online_block" block
+    Then I should see a "help_block" block
 
   @javascript
   Scenario: Create a new layout using the Panelizer Wizard
