@@ -227,7 +227,7 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
    */
   public function visitCurrentNodeRevision() {
     $this->minkContext->clickLink('Revisions');
-    $this->lightning->clickElementBySelector('td.revision-current:first-child a');
+    $this->lightning->clickElementBySelector('.node-revision-table tr.revision-current td:first-child a');
   }
 
   /**
