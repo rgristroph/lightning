@@ -386,19 +386,6 @@ class LightningSubContext extends DrupalSubContextBase implements DrupalSubConte
   }
 
   /**
-   * Asserts that a link is not present.
-   *
-   * @param string $link
-   *   The link ID, title, or text content.
-   *
-   * @Then I should not see a(n) :link link
-   */
-  public function assertLinkNotExists($link) {
-    $this->assertSession()
-      ->elementNotExists('named', ['link', $link]);
-  }
-
-  /**
    * Submits the image browser.
    *
    * @When I submit the entity browser

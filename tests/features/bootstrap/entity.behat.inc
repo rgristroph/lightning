@@ -20,7 +20,7 @@ use Drupal\user\Entity\User;
 class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextInterface {
 
   /**
-   * Entities created during the scenario.
+   * Entities created during the scenario, organized by type.
    *
    * @var array
    */
@@ -87,7 +87,7 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
   }
 
   /**
-   * Queues a node created by Drupal Extension for post-scenario deletion.
+   * Queues a node to be deleted at the end of the scenario.
    *
    * @param \Drupal\DrupalExtension\Hook\Scope\EntityScope $scope
    *   The hook scope.
@@ -100,7 +100,7 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
   }
 
   /**
-   * Queues a term created by Drupal Extension for post-scenario deletion.
+   * Queues a taxonomy term to be deleted at the end of the scenario.
    *
    * @param \Drupal\DrupalExtension\Hook\Scope\EntityScope $scope
    *   The hook scope.
@@ -113,7 +113,7 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
   }
 
   /**
-   * Queues a user created by Drupal Extension for post-scenario deletion.
+   * Queues a user to be deleted at the end of the scenario.
    *
    * @param \Drupal\DrupalExtension\Hook\Scope\EntityScope $scope
    *   The hook scope.
@@ -126,7 +126,7 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
   }
 
   /**
-   * Queues an entity for post-scenario deletion.
+   * Queues an entity to be deleted at the end of the scenario.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to queue.
@@ -143,8 +143,20 @@ class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextI
    */
   public function cleanEntities() {
     foreach ($this->entities as $entity_type => $entities) {
+      /** @var \Drupal\Core\Entity\EntityInterface $entity */
+      foreach ($entities as $entity) {
+        // Clean up the entity's alias, if there is one.
+        $path = '/' . $entity->toUrl()->getInternalPath();
+        $alias = \Drupal::service('path.alias_manager')->getAliasByPath($path);
+        if ($alias != $path) {
+          \Drupal::service('path.alias_storage')->delete(['alias' => $alias]);
+        }
+      }
+
       $storage_handler = \Drupal::entityTypeManager()->getStorage($entity_type);
 
+      // If this is a Multiversion-aware storage handler, call purge() to do a
+      // hard delete.
       if (method_exists($storage_handler, 'purge')) {
         $storage_handler->purge($entities);
       }
