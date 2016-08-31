@@ -100,10 +100,13 @@ Feature: Panelizer Wizard
 
   @javascript
   Scenario:  Block placement on non-default displays are preserved after re-saving the entity.
-    Given I am logged in as a user with the "layout_manager,landing_page_creator" role
+    Given users:
+      | name | mail          | roles                               |
+      | Foo  | foo@localhost | layout_manager,landing_page_creator |
+    And I am logged in as Foo
     And landing_page content:
-      | title  | path    | moderation_state |
-      | Foobar | /foobar | draft            |
+      | title  | path    | moderation_state | author |
+      | Foobar | /foobar | draft            | Foo    |
     When I visit "/foobar"
     And I click "Edit draft"
     And I select "two_column" from "Full content"
