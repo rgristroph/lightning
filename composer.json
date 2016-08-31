@@ -74,7 +74,7 @@
                 "2700597 - Explicitly set the Panels IPE URL root when saving in Panelizer":
                 "https://www.drupal.org/files/issues/panelizer-ipe-url-root-handling.patch",
                 "2664682 - Implement admin UI for editing Panelizer defaults":
-                "https://www.drupal.org/files/issues/2664682-54.patch"
+                "https://www.drupal.org/files/issues/2664682-55.patch"
             },
             "drupal/panels": {
                 "2747739 - Mega Patch":

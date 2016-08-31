@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "101616e5013830a2722928c977245bff",
-    "content-hash": "a5b639ae6b57c263dfca74bfca7424d8",
+    "hash": "6576991e74548bb613c06832e9307095",
+    "content-hash": "597e3e2e3512622657c4619c9f1da5e4",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -154,16 +154,16 @@
         },
         {
             "name": "composer/semver",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "03c9de5aa25e7672c4ad251eeaba0c47a06c8b98"
+                "reference": "c7cb9a2095a074d131b65a8a0cd294479d785573"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/03c9de5aa25e7672c4ad251eeaba0c47a06c8b98",
-                "reference": "03c9de5aa25e7672c4ad251eeaba0c47a06c8b98",
+                "url": "https://api.github.com/repos/composer/semver/zipball/c7cb9a2095a074d131b65a8a0cd294479d785573",
+                "reference": "c7cb9a2095a074d131b65a8a0cd294479d785573",
                 "shasum": ""
             },
             "require": {
@@ -212,7 +212,7 @@
                 "validation",
                 "versioning"
             ],
-            "time": "2016-06-02 09:04:51"
+            "time": "2016-08-30 16:08:34"
         },
         {
             "name": "cweagans/composer-patches",
@@ -1637,7 +1637,7 @@
                     "2747739 - Mega Patch": "https://www.drupal.org/files/issues/panelizer--alpha2-1ddfa61--2747739-5.patch",
                     "2701349 - Generate new UUIDs for displays when switching from default to field storage": "https://www.drupal.org/files/issues/2701349-2.patch",
                     "2700597 - Explicitly set the Panels IPE URL root when saving in Panelizer": "https://www.drupal.org/files/issues/panelizer-ipe-url-root-handling.patch",
-                    "2664682 - Implement admin UI for editing Panelizer defaults": "https://www.drupal.org/files/issues/2664682-54.patch"
+                    "2664682 - Implement admin UI for editing Panelizer defaults": "https://www.drupal.org/files/issues/2664682-55.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
@@ -4687,16 +4687,16 @@
         },
         {
             "name": "drupal-composer/drupal-scaffold",
-            "version": "2.0.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal-composer/drupal-scaffold.git",
-                "reference": "0899167ed08be48e5137a701436fe4919820d6bf"
+                "reference": "617fa3a2466795b148e3255651591682f2325ede"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal-composer/drupal-scaffold/zipball/0899167ed08be48e5137a701436fe4919820d6bf",
-                "reference": "0899167ed08be48e5137a701436fe4919820d6bf",
+                "url": "https://api.github.com/repos/drupal-composer/drupal-scaffold/zipball/617fa3a2466795b148e3255651591682f2325ede",
+                "reference": "617fa3a2466795b148e3255651591682f2325ede",
                 "shasum": ""
             },
             "require": {
@@ -4724,7 +4724,7 @@
                 "GPL-2.0+"
             ],
             "description": "Composer Plugin for updating the Drupal scaffold files when using drupal/core",
-            "time": "2016-05-25 21:59:48"
+            "time": "2016-08-29 16:56:02"
         },
         {
             "name": "drupal/coder",
