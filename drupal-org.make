@@ -96,6 +96,7 @@ projects[panels][download][url] = https://git.drupal.org/project/panels
 projects[panels][download][tag] = 8.x-3.0-beta4
 projects[panels][patch][] = https://www.drupal.org/files/issues/panels-beta4-75131285.patch
 projects[panels][patch][] = https://www.drupal.org/files/issues/2667754-3.patch
+projects[panels][patch][] = https://www.drupal.org/files/issues/bandaid.patch
 projects[pathauto][type] = module
 projects[pathauto][download][type] = git
 projects[pathauto][download][url] = https://git.drupal.org/project/pathauto
