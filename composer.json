@@ -62,10 +62,6 @@
             ]
         },
         "patches": {
-            "drupal/core": {
-                "Plugin Lazy loading can cause usort warning":
-                "https://www.drupal.org/files/issues/Iterating-through-array--2699157.patch"
-            },
             "drupal/panelizer": {
                 "2747739 - Mega Patch":
                 "https://www.drupal.org/files/issues/panelizer--alpha2-1ddfa61--2747739-5.patch",
@@ -134,7 +130,7 @@
         "drupal/replication": "dev-replication-filters-ui",
         "drupal/entity_storage_migrate": "dev-8.x-1.x",
         "drupal/key_value": "^8.1.0",
-        "drupal/entity_browser": "8.1.0-alpha7",
+        "drupal/entity_browser": "8.1.0-alpha8",
         "drupal/views_infinite_scroll": "^8.1.1",
         "drupal/media_entity_document": "^8.1.0",
         "drupal/video_embed_field": "^8.1.0"
