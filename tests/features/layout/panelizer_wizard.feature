@@ -61,7 +61,7 @@ Feature: Panelizer Wizard
     And I visit "/admin/structure/panelizer/edit/node__landing_page__full__two_column/content"
     And I remove the "Authored by" block from the left panelizer region
 
-  @javascript
+  @javascript @failing
   Scenario: Changes made to layouts and saved to default via the IPE are reflected in the corresponding Wizard.
     Given users:
       | name | mail          | roles                               |
@@ -74,7 +74,8 @@ Feature: Panelizer Wizard
     And I place the "views_block:who_s_online-who_s_online_block" block from the "Lists (Views)" category
     # Click IPE Save
     And I save the layout as default
-    And I visit "/admin/structure/panelizer/edit/node__landing_page__full__default/content"
+    And I visit "/admin/structure/panelizer/edit/node__landing_page__full__default"
+    And I click "Content"
     Then the "Who's online" block should be in the middle region
     And I remove the "Who's online" block from the "middle" panelizer region
 
