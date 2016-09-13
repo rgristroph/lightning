@@ -76,8 +76,8 @@ Feature: Panelizer Wizard
     And I save the layout as default
     And I visit "/admin/structure/panelizer/edit/node__landing_page__full__default"
     And I click "Content"
-    Then the "Who's online" block should be in the middle region
-    And I remove the "Who's online" block from the "middle" panelizer region
+    And the "Who's online" block should be in the middle region
+    Then I remove the "Who's online" block from the "middle" panelizer region
 
   Scenario: Access denied results in 403, not an exception.
     Given I am an anonymous user
