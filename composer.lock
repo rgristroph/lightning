@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5ba55edc82afb954eff99bab367d8d5b",
-    "content-hash": "6545dd8243597bf46b432879b8b0b4ef",
+    "hash": "c49fe7c0e02d6db486d6af4129f823b7",
+    "content-hash": "7bec049487dd6884d4dba42fed926ff1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1729,28 +1729,29 @@
         },
         {
             "name": "drupal/replication",
-            "version": "dev-replication-filters-ui",
+            "version": "dev-8.x-1.x",
             "source": {
                 "type": "git",
-                "url": "https://github.com/josephdpurcell/drupal-replication.git",
-                "reference": "07267da72d365b6fd90734995600e8fb4378f7a4"
+                "url": "https://git.drupal.org/project/replication.git",
+                "reference": "70c2df7f806ebf2b68bc45c7cc733eae91dacd50"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/josephdpurcell/drupal-replication/zipball/07267da72d365b6fd90734995600e8fb4378f7a4",
-                "reference": "07267da72d365b6fd90734995600e8fb4378f7a4",
-                "shasum": ""
+            "require": {
+                "drupal/core": "8.*",
+                "drupal/multiversion": "8.*"
             },
             "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-8.x-1.x": "8.1.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.drupal-composer.org/downloads/",
             "license": [
                 "GPL-2.0+"
             ],
             "description": "Provides services and entities types so assist with and log content replication.",
             "homepage": "http://drupal.org/project/replication",
-            "support": {
-                "source": "https://github.com/josephdpurcell/drupal-replication/tree/replication-filters-ui"
-            },
-            "time": "2016-08-15 16:27:28"
+            "time": "2016-09-28 11:24:42"
         },
         {
             "name": "drupal/scheduled_updates",
@@ -1944,32 +1945,34 @@
         },
         {
             "name": "drupal/workspace",
-            "version": "dev-replication-filters-ui",
+            "version": "dev-8.x-1.x",
             "source": {
                 "type": "git",
-                "url": "https://github.com/josephdpurcell/drupal-workspace.git",
-                "reference": "2bf59763ee7d6cf9c59aaf17dd7cbfe5ab9c1a50"
+                "url": "https://git.drupal.org/project/workspace",
+                "reference": "35fdcf8b7e73736db304e35f7fca32014748b167"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/josephdpurcell/drupal-workspace/zipball/2bf59763ee7d6cf9c59aaf17dd7cbfe5ab9c1a50",
-                "reference": "2bf59763ee7d6cf9c59aaf17dd7cbfe5ab9c1a50",
-                "shasum": ""
+            "require": {
+                "drupal/core": "8.*",
+                "drupal/datetime": "8.*",
+                "drupal/options": "8.*",
+                "drupal/replication": "8.*"
             },
             "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-8.x-1.x": "8.1.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.drupal-composer.org/downloads/",
             "license": [
                 "GPL-2.0+"
             ],
-            "description": "The workspace module",
+            "description": "Provides the ability to have multiple workspaces on a single site to facilitate things like full-site preview and content staging.",
             "homepage": "https://www.drupal.org/project/workspace",
             "keywords": [
                 "Drupal"
             ],
-            "support": {
-                "issues": "http://drupal.org/project/issues/workspace",
-                "source": "http://cgit.drupalcode.org/workspace"
-            },
-            "time": "2016-08-24 18:21:58"
+            "time": "2016-08-26 14:44:20"
         },
         {
             "name": "easyrdf/easyrdf",
@@ -4984,6 +4987,10 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "9.0.x-dev"
+                },
+                "patches_applied": {
+                    "Adding composer.json support to make-convert command": "https://github.com/drush-ops/drush/commit/ce82b946d49b09cd33da5ca84feb24a6c35f8f8e.patch",
+                    "The batch table may not exist by the time _drush_backend_batch_process() is called in 8.x-1.x": "https://github.com/drush-ops/drush/commit/c389aebb7d3e26ff0f544684d8b3ec3528107e55.diff"
                 }
             },
             "autoload": {

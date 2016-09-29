@@ -30,15 +30,6 @@
         {
             "type": "composer",
             "url": "https://packagist.drupal-composer.org"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/josephdpurcell/drupal-replication"
-        }
-        ,
-        {
-            "type": "vcs",
-            "url": "https://github.com/josephdpurcell/drupal-workspace"
         }
     ],
     "scripts": {
@@ -126,8 +117,8 @@
         "drupal/token": "^8.1.0",
         "drupal/pathauto": "^8.1.0",
         "drupal/multiversion": "8.1.0-alpha9",
-        "drupal/workspace": "dev-replication-filters-ui",
-        "drupal/replication": "dev-replication-filters-ui",
+        "drupal/workspace": "8.1.x-dev",
+        "drupal/replication": "8.1.x-dev",
         "drupal/entity_storage_migrate": "dev-8.x-1.x",
         "drupal/key_value": "^8.1.0",
         "drupal/entity_browser": "8.1.0-alpha9",
