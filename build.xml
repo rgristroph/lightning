@@ -132,6 +132,7 @@
     <phingcall target="build" />
     <exec command="${drush} cache-rebuild" />
     <exec command="${drush} updatedb --yes" dir="${docroot}" passthru="true" />
+    <exec command="${drush} enable lightning_preview --yes" dir="${docroot}" passthru="true" />
     <!-- TODO: Execute manual update steps as needed. -->
   </target>
 
