@@ -56,7 +56,7 @@ class ExtensionSelectForm extends FormBase {
       'lightning_media',
       'lightning_layout',
       'lightning_workflow',
-      'lightning_preview',
+      FALSE,
     ];
 
     $description = $this->t("You can choose to disable some of Lightning's functionality above. However, it is not recommended.");
