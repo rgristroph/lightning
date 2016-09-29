@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c49fe7c0e02d6db486d6af4129f823b7",
-    "content-hash": "7bec049487dd6884d4dba42fed926ff1",
+    "hash": "2ee99e9039887801abc38982b6404556",
+    "content-hash": "1a52cc6c98f81af90e9c2ac0deb8c621",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -539,6 +539,59 @@
                 "spl"
             ],
             "time": "2015-12-25 13:10:16"
+        },
+        {
+            "name": "doctrine/couchdb",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/couchdb-client.git",
+                "reference": "911c01716730af0fc0b5074a0740fddce3156ac0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/couchdb-client/zipball/911c01716730af0fc0b5074a0740fddce3156ac0",
+                "reference": "911c01716730af0fc0b5074a0740fddce3156ac0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Doctrine\\CouchDB": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Lukas Kahwe Smith",
+                    "email": "smith@pooteeweet.org"
+                }
+            ],
+            "description": "CouchDB Client",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "couchdb",
+                "persistence"
+            ],
+            "time": "2016-08-06 11:26:41"
         },
         {
             "name": "doctrine/inflector",
@@ -1728,6 +1781,42 @@
             "time": "2016-08-07 10:52:55"
         },
         {
+            "name": "drupal/relaxed",
+            "version": "8.1.0-alpha9",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupal.org/project/relaxed.git",
+                "reference": "45811442638eafb811789c38e241e1db973e7aec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/relaxed-8.x-1.0-alpha9.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "drupal/basic_auth": "8.*",
+                "drupal/core": "8.*",
+                "drupal/multiversion": "8.*",
+                "drupal/replication": "8.*",
+                "drupal/rest": "8.*",
+                "relaxedws/replicator": "dev-master"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-8.x-1.x": "8.1.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.drupal-composer.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Provides a RESTful API that exposes all content entities over UUID endpoints. Utility endpoints are also provided subscribing to changes and handling content replication.",
+            "homepage": "https://www.drupal.org/project/relaxed",
+            "time": "2016-08-04 13:54:04"
+        },
+        {
             "name": "drupal/replication",
             "version": "dev-8.x-1.x",
             "source": {
@@ -2602,6 +2691,48 @@
                 "psr-3"
             ],
             "time": "2016-09-19 16:02:08"
+        },
+        {
+            "name": "relaxedws/replicator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/relaxedws/couchdb-replicator.git",
+                "reference": "72d7297b17f78e5caed1b78344a19f0f1ad179b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/relaxedws/couchdb-replicator/zipball/72d7297b17f78e5caed1b78344a19f0f1ad179b5",
+                "reference": "72d7297b17f78e5caed1b78344a19f0f1ad179b5",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/couchdb": "dev-master"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.6.*"
+            },
+            "bin": [
+                "replicator"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Relaxed\\Replicator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "abhishek kumar",
+                    "email": "abhi170893@gmail.com"
+                }
+            ],
+            "description": "couchdb-replicator",
+            "time": "2016-04-29 15:23:32"
         },
         {
             "name": "stack/builder",
