@@ -7,8 +7,8 @@ Feature: Workspaces
     And I press "Save and Publish"
     And I visit "/admin/structure/workspace/2/activate"
     And I press "Activate"
-    And I go to "/node/add"
-    Then the response status code should be 403
+    And I go to "/node/add/page"
+    Then I should not see the button "Save"
     And I visit "/admin/structure/workspace/2/edit"
     And I press "Save and Create New Draft"
 
