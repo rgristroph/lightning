@@ -18,6 +18,12 @@ function lightning_install_tasks() {
       'type' => 'form',
       'function' => ExtensionSelectForm::class,
     ),
+    'lightning_confirm_experimental' => [
+      'display_name' => t('Confirm Experimental'),
+      'display' => TRUE,
+      'type' => 'form',
+      'function' => ExperimentalConfirmForm::class,
+    ],
     'lightning_install_extensions' => array(
       'display_name' => t('Install extensions'),
       'display' => TRUE,

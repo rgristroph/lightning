@@ -4,6 +4,7 @@ namespace Drupal\lightning\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\Enhancer\ParamConversionEnhancer;
 use Drupal\lightning\Extender;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -96,19 +97,51 @@ class ExtensionSelectForm extends FormBase {
   }
 
   /**
+   * Builds and categorizes the list of modules to be enabled.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   * @return array
+   *   The list of modules to be enabled.
+   */
+  public function buildModuleList(FormStateInterface $form_state) {
+    $extensions = $form_state->getValue('extensions');
+    $module_list = [
+      'install' => [],
+      'dependencies' => [],
+      'experimental' => [],
+    ];
+    foreach ($extensions as $extension => $description) {
+      if (substr($description, -strlen('Experimental')) == '(Experimental') {
+        $module_list['experimental'][] = $extension;
+      }
+      elseif ($extension == 'lightning_media') {
+        $module_list['install'][] = $extension;
+        // Lightning Media has additional dependencies that aren't a hard
+        // requirement but should be installed by default.
+        $module_list['experimental'][] = 'lightning_media_document';
+        $module_list['experimental'][] = 'lightning_media_image';
+        $module_list['experimental'][] = 'lightning_media_instagram';
+        $module_list['experimental'][] = 'lightning_media_twitter';
+        $module_list['experimental'][] = 'lightning_media_video';
+      }
+      else {
+        $module_list['install'][] = $extension;
+      }
+    }
+    return $module_list;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $modules = array_filter($form['extensions']['#value']);
-
-    if (in_array('lightning_media', $modules)) {
-      $modules[] = 'lightning_media_document';
-      $modules[] = 'lightning_media_image';
-      $modules[] = 'lightning_media_instagram';
-      $modules[] = 'lightning_media_twitter';
-      $modules[] = 'lightning_media_video';
+    $module_list = $this->buildModuleList($form_state);
+    $modules = [];
+    foreach ($module_list as $category) {
+      foreach ($category as $module) {
+        $modules[] = $module;
+      }
     }
-
     $GLOBALS['install_state']['lightning']['modules'] = array_merge($modules, $this->extender->getModules());
   }
 
