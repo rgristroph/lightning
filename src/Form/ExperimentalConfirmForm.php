@@ -2,12 +2,14 @@
 
 namespace Drupal\lightning\Form;
 
-use Drupal\system\Form\ModulesListConfirmForm;
+use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Defines a form to confirm enabling Lightning experimental modules.
  */
-class ExperimentalConfirmForm extends ModulesListConfirmForm {
+class ExperimentalConfirmForm extends ConfirmFormBase {
 
   /**
    * {@inheritdoc}
@@ -20,18 +22,19 @@ class ExperimentalConfirmForm extends ModulesListConfirmForm {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'lightning_experimental_confirm_form';
+    return 'lightning_confirm_experimental';
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function buildMessageList() {
-    drupal_set_message($this->t('<a href=":url">Experimental modules</a> are provided for testing purposes only. Use at your own risk.', [':url' => 'https://www.drupal.org/core/experimental']), 'warning');
-    $items = parent::buildMessageList();
-    // Add the list of experimental modules after any other messages.
-    $items[] = $this->t('The following modules are experimental: @modules', ['@modules' => implode(', ', array_values($this->modules['experimental']))]);
-    return $items;
+  public function getCancelUrl() {
+    return new Url('system.modules_list');
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {}
 
 }
