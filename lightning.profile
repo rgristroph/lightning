@@ -21,7 +21,7 @@ function lightning_install_tasks() {
     ),
     'lightning_confirm_experimental' => [
       'display_name' => t('Confirm Experimental'),
-      'display' => TRUE,
+      'display' => FALSE,
       'type' => 'form',
       'function' => ExperimentalConfirmForm::class,
     ],

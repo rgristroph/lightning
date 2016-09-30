@@ -119,11 +119,11 @@ class ExtensionSelectForm extends FormBase {
         $module_list['install'][] = $extension;
         // Lightning Media has additional dependencies that aren't a hard
         // requirement but should be installed by default.
-        $module_list['experimental'][] = 'lightning_media_document';
-        $module_list['experimental'][] = 'lightning_media_image';
-        $module_list['experimental'][] = 'lightning_media_instagram';
-        $module_list['experimental'][] = 'lightning_media_twitter';
-        $module_list['experimental'][] = 'lightning_media_video';
+        $module_list['dependencies'][] = 'lightning_media_document';
+        $module_list['dependencies'][] = 'lightning_media_image';
+        $module_list['dependencies'][] = 'lightning_media_instagram';
+        $module_list['dependencies'][] = 'lightning_media_twitter';
+        $module_list['dependencies'][] = 'lightning_media_video';
       }
       else {
         $module_list['install'][] = $extension;
