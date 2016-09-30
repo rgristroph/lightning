@@ -113,6 +113,9 @@ class ExtensionSelectForm extends FormBase {
     ];
     foreach ($extensions as $extension => $description) {
       if (substr($description, -strlen('Experimental')) == '(Experimental') {
+        // @TODO: the human readable decription (which includes the string
+        // we're searching for - "(Experimental)" - isn't actually in the value
+        // so this will never be executed.
         $module_list['experimental'][] = $extension;
       }
       elseif ($extension == 'lightning_media') {

@@ -21,6 +21,8 @@ function lightning_install_tasks() {
     ),
     'lightning_confirm_experimental' => [
       'display_name' => t('Confirm Experimental'),
+      // @TODO: Set this to true if an exp module is enabled.
+      // @see ExtensionSelectForm::buildModuleList()
       'display' => FALSE,
       'type' => 'form',
       'function' => ExperimentalConfirmForm::class,
