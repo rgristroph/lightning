@@ -4,7 +4,6 @@ namespace Drupal\lightning\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\Enhancer\ParamConversionEnhancer;
 use Drupal\lightning\Extender;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -100,6 +99,8 @@ class ExtensionSelectForm extends FormBase {
    * Builds and categorizes the list of modules to be enabled.
    *
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
    * @return array
    *   The list of modules to be enabled.
    */

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: adam.balsam
- * Date: 9/30/16
- * Time: 2:07 PM
- */
 
 namespace Drupal\lightning\Form;
 

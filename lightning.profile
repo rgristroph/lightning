@@ -6,6 +6,7 @@
  */
 
 use Drupal\lightning\Form\ExtensionSelectForm;
+use Drupal\lightning\Form\ExperimentalConfirmForm;
 
 /**
  * Implements hook_install_tasks().
