@@ -45,17 +45,15 @@ function lightning_install_tasks_alter(array &$tasks, array $install_state) {
 /**
  * Install task callback; prepares a batch job to install Lightning extensions.
  *
- * @param array $install_state
- *   The current install state.
- *
  * @return array
  *   The batch job definition.
  */
-function lightning_install_extensions(array &$install_state) {
+function lightning_install_extensions() {
   $batch = array();
-  foreach ($install_state['lightning']['modules'] as $module) {
+  foreach (\Drupal::state()->get('lightning_extensions') as $module) {
     $batch['operations'][] = ['lightning_install_module', (array) $module];
   }
+  \Drupal::state()->delete('lightning_extensions');
   return $batch;
 }
 

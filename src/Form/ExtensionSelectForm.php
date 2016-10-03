@@ -79,7 +79,7 @@ class ExtensionSelectForm extends FormBase {
         'lightning_media' => $this->t('Lightning Media'),
         'lightning_layout' => $this->t('Lightning Layout'),
         'lightning_workflow' => $this->t('Lightning Workflow'),
-        'lightning_preview' => $this->t('Lightning Preview (Experimental)'),
+        'lightning_preview_experimental' => $this->t('Lightning Preview (Experimental)'),
       ],
       '#default_value' => $lightning_extensions,
     ];
@@ -111,11 +111,10 @@ class ExtensionSelectForm extends FormBase {
       'dependencies' => [],
       'experimental' => [],
     ];
-    foreach ($extensions as $extension => $description) {
-      if (substr($description, -strlen('Experimental')) == '(Experimental') {
-        // @TODO: the human readable decription (which includes the string
-        // we're searching for - "(Experimental)" - isn't actually in the value
-        // so this will never be executed.
+    foreach ($extensions as $extension) {
+      if (substr($extension, -strlen('_experimental')) == '_experimental') {
+        // Remove `_experimental` which is just used as a flag.
+        $extension = substr($extension, 0, -strlen('_experimental'));
         $module_list['experimental'][] = $extension;
       }
       elseif ($extension == 'lightning_media') {
@@ -146,7 +145,7 @@ class ExtensionSelectForm extends FormBase {
         $modules[] = $module;
       }
     }
-    $GLOBALS['install_state']['lightning']['modules'] = array_merge($modules, $this->extender->getModules());
+    \Drupal::state()->set('lightning_extensions', array_merge($modules, $this->extender->getModules()));
   }
 
 }
