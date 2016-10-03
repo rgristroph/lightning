@@ -21,9 +21,7 @@ function lightning_install_tasks() {
     ),
     'lightning_confirm_experimental' => [
       'display_name' => t('Confirm Experimental'),
-      // @TODO: Set this to true if an exp module is enabled.
-      // @see ExtensionSelectForm::buildModuleList()
-      'display' => FALSE,
+      'display' => \Drupal::state()->get('lightning_experimental', FALSE),
       'type' => 'form',
       'function' => ExperimentalConfirmForm::class,
     ],
@@ -78,6 +76,9 @@ function lightning_install_module($module) {
  *   extender is configured with one.
  */
 function lightning_post_install_redirect(array &$install_state) {
+  // This is the next guaranteed step after setting the experimental bool.
+  \Drupal::state()->delete('lightning_experimental');
+
   $redirect = \Drupal::service('lightning.extender')->getRedirect();
 
   $output = [

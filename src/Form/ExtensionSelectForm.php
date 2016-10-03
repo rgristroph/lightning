@@ -131,6 +131,9 @@ class ExtensionSelectForm extends FormBase {
         $module_list['install'][] = $extension;
       }
     }
+    if (!empty($module_list['experimental'])) {
+      \Drupal::state()->set('lightning_experimental', TRUE);
+    }
     return $module_list;
   }
 
